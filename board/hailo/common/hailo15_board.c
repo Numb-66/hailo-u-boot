@@ -14,6 +14,7 @@
 #include <generated/autoconf.h>
 #include <scmi_hailo.h>
 #include <env.h>
+#include <env_internal.h>
 #include <linux/bitops.h>
 #include <linux/sizes.h>
 #include <dt-bindings/soc/hailo15_scu_fw_version.h>
@@ -25,8 +26,18 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+typedef enum {
+    BOOT_SOURCE_BOOTSTRAP = 0,
+    BOOT_SOURCE_SPI_FLASH = 1,
+    BOOT_SOURCE_UART = 2,
+    BOOT_SOURCE_PCIE = 3,
+    BOOT_SOURCE_EMMC0 = 4,
+    BOOT_SOURCE_EMMC1 = 5,
+} BOOT_SOURCE_t;
+
 static struct udevice *scmi_agent_dev = NULL;
 ulong active_boot_image_offset = 0;
+ulong active_boot_image_storage = 0;
 
 // Global variable to indicate if the boot image is in remote update mode, and need to set the corresponding env variable
 uint8_t boot_image_mode = 0;
@@ -42,6 +53,54 @@ struct hailo15_dram_cfg {
 	/* bank usable size = (ecc_enable) ? (bank_total_size * 7 / 8) : bank_total_size*/
 	phys_size_t bank_usable_size;
 } hailo15_dram_cfg;
+
+static enum env_location hailo_env_locations[] = {
+#ifdef CONFIG_ENV_IS_IN_MMC
+	ENVL_MMC,
+#endif
+#ifdef CONFIG_ENV_IS_IN_SPI_FLASH
+	ENVL_SPI_FLASH,
+#endif
+#ifdef CONFIG_ENV_IS_IN_EEPROM
+	ENVL_EEPROM,
+#endif
+#ifdef CONFIG_ENV_IS_IN_EXT4
+	ENVL_EXT4,
+#endif
+#ifdef CONFIG_ENV_IS_IN_FAT
+	ENVL_FAT,
+#endif
+#ifdef CONFIG_ENV_IS_IN_FLASH
+	ENVL_FLASH,
+#endif
+#ifdef CONFIG_ENV_IS_IN_NAND
+	ENVL_NAND,
+#endif
+#ifdef CONFIG_ENV_IS_IN_NVRAM
+	ENVL_NVRAM,
+#endif
+#ifdef CONFIG_ENV_IS_IN_REMOTE
+	ENVL_REMOTE,
+#endif
+#ifdef CONFIG_ENV_IS_IN_SATA
+	ENVL_ESATA,
+#endif
+#ifdef CONFIG_ENV_IS_IN_UBI
+	ENVL_UBI,
+#endif
+#ifdef CONFIG_ENV_IS_NOWHERE
+	ENVL_NOWHERE,
+#endif
+
+};
+
+enum env_location env_get_location(enum env_operation op, int prio)
+{
+	if (prio >= ARRAY_SIZE(hailo_env_locations))
+		return ENVL_UNKNOWN;
+
+	return hailo_env_locations[prio];
+}
 
 extern struct mm_region hailo15_mem_map[];
 #if defined(CONFIG_MAC_ADDR_IN_SPIFLASH)
@@ -166,10 +225,19 @@ int hailo15_scmi_init(void)
 	}
 
 	active_boot_image_offset = boot_info.active_boot_image_offset;
+	active_boot_image_storage = boot_info.active_boot_image_storage;
 
 	// boot_image_mode is passed directly to bootmenu to test against
 	boot_image_mode = boot_info.boot_image_mode;
-	
+
+#if defined (CONFIG_ENV_IS_IN_MMC) && defined (CONFIG_ENV_IS_IN_SPI_FLASH)
+	/* if both configs are set, and boot_image_storage == flash, we change the priorities */
+	if(BOOT_SOURCE_SPI_FLASH == active_boot_image_storage) {
+		hailo_env_locations[0] = ENVL_SPI_FLASH;
+		hailo_env_locations[1] = ENVL_MMC;
+	}
+#endif
+
 	return 0;
 }
 
@@ -217,6 +285,9 @@ int misc_init_r(void)
 	   and not in board_early_init_r(), since in board_early_init_r() we don't yet have serial */
 	return hailo15_scmi_check_version_match();
 }
+
+/* In SPL we don't use dram_init_banksize() and dram_init() */
+#ifndef CONFIG_SPL_BUILD
 
 #define CS_MAP_ADDR 282
 #define CS_MAP_OFFSET 16
@@ -353,7 +424,6 @@ int dram_init(void)
 	return 0;
 }
 
-
 /*! @note Need to add back the appropriate DDR reg configs to veloce/ginger/... also */
 int dram_init_banksize(void)
 {
@@ -373,6 +443,8 @@ int dram_init_banksize(void)
 
 	return 0;
 }
+
+#endif /* !CONFIG_SPL_BUILD */
 
 #if defined(CONFIG_SHOW_BOOT_PROGRESS)
 void show_boot_progress(int progress)

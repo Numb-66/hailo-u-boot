@@ -11,6 +11,10 @@
 //#include "hailo15_ddr_MT53E2G32D4DE-046_regconfig_8GB.dtsi"
 #include "hailo15_ddr_MT53E1G32D2FW-046_regconfig_ca_odtb_pu_4GB.dtsi"
 
+&hailo_boot_info {
+    shutdown-gpio-pin = <20>;
+};
+
 &sdio1 {
     status = "okay";
     sdhci-caps = <0 0x01000000>; // Force VOLT33 capability

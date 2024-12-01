@@ -681,6 +681,8 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 		BOOT_DEVICE_NONE,
 		BOOT_DEVICE_NONE,
 	};
+	typedef void __noreturn (*jump_to_image_t)(struct spl_image_info *);
+	jump_to_image_t jump_to_image = &jump_to_image_no_args;
 	struct spl_image_info spl_image;
 	int ret;
 
@@ -781,20 +783,20 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 	case IH_OS_ARM_TRUSTED_FIRMWARE:
 		debug("Jumping to U-Boot via ARM Trusted Firmware\n");
 		spl_fixup_fdt(spl_image.fdt_addr);
-		spl_invoke_atf(&spl_image);
+		jump_to_image = &spl_invoke_atf;
 		break;
 #endif
 #if CONFIG_IS_ENABLED(OPTEE_IMAGE)
 	case IH_OS_TEE:
 		debug("Jumping to U-Boot via OP-TEE\n");
 		spl_board_prepare_for_optee(spl_image.fdt_addr);
-		jump_to_image_optee(&spl_image);
+		jump_to_image = &jump_to_image_optee;
 		break;
 #endif
 #if CONFIG_IS_ENABLED(OPENSBI)
 	case IH_OS_OPENSBI:
 		debug("Jumping to U-Boot via RISC-V OpenSBI\n");
-		spl_invoke_opensbi(&spl_image);
+		jump_to_image = &spl_invoke_opensbi;
 		break;
 #endif
 #if CONFIG_IS_ENABLED(OS_BOOT)
@@ -804,7 +806,7 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 		spl_fixup_fdt((void *)CONFIG_SYS_SPL_ARGS_ADDR);
 #endif
 		spl_board_prepare_for_linux();
-		jump_to_image_linux(&spl_image);
+		jump_to_image = &jump_to_image_linux;
 #endif
 	default:
 		debug("Unsupported OS image.. Jumping nevertheless..\n");
@@ -822,7 +824,7 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 #endif
 
 	spl_board_prepare_for_boot();
-	jump_to_image_no_args(&spl_image);
+	jump_to_image(&spl_image);
 }
 
 /*

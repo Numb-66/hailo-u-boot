@@ -8,6 +8,19 @@
 
 /* original */
 struct mm_region hailo15_mem_map[] = {
+#ifdef CONFIG_SPL_BUILD
+	/* In SPL, we don't want to rely on dram_init() parsing the devicetree
+	   for getting the correct RAM size, since we want to enable falcon mode
+	   to be as fast as possible. So we opt for a static DRAM configuration,
+	   which does not have to be the same as actual DRAM size (it may be smaller). */
+	{
+		.phys = PHYS_SDRAM_1,
+		.virt = PHYS_SDRAM_1,
+		.size = CONFIG_HAILO15_SPL_DRAM_SIZE,
+		.attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
+			 PTE_BLOCK_INNER_SHARE
+	},
+#else /* U-Boot proper build */
 	{
 		/* Updated by dram_init() */
 		.attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
@@ -18,6 +31,7 @@ struct mm_region hailo15_mem_map[] = {
 		.attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
 			 PTE_BLOCK_INNER_SHARE
 	},
+#endif
 	{
 		.virt = 0x0UL,
 		.phys = 0x0UL,

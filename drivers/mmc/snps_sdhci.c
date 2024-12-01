@@ -191,6 +191,12 @@ static void sdhci_hailo15_phy_config(struct sdhci_host *host, struct udevice *de
 	reg32 &= ~DWCMSHC_PHY_CNFG__PAD_SN;
 	reg32 |= FIELD_PREP(DWCMSHC_PHY_CNFG__PAD_SN, sdio_phy_config->drive_strength[PAD_SN]);
 	sdhci_writel(host, reg32, DWCMSHC_PHY_CNFG);
+
+	if (sdio_phy_config->card_is_emmc) {
+		reg32 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
+		reg32 |= SDHCI_CTRL_VDD_180;
+		sdhci_writew(host, reg32, SDHCI_HOST_CONTROL2);
+	}
 }
 
 static int snps_sdhci_bind(struct udevice *dev)

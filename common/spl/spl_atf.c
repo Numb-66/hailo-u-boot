@@ -187,9 +187,9 @@ static inline void raw_write_daif(unsigned int daif)
 	__asm__ __volatile__("msr DAIF, %0\n\t" : : "r" (daif) : "memory");
 }
 
-typedef void (*atf_entry_t)(struct bl31_params *params, void *plat_params);
+typedef void __noreturn (*atf_entry_t)(struct bl31_params *params, void *plat_params);
 
-static void bl31_entry(uintptr_t bl31_entry, uintptr_t bl32_entry,
+static void __noreturn bl31_entry(uintptr_t bl31_entry, uintptr_t bl32_entry,
 		       uintptr_t bl33_entry, uintptr_t fdt_addr)
 {
 	atf_entry_t  atf_entry = (atf_entry_t)bl31_entry;
@@ -251,7 +251,7 @@ uintptr_t spl_fit_images_get_entry(void *blob, int node)
 	return val;
 }
 
-void spl_invoke_atf(struct spl_image_info *spl_image)
+void __noreturn spl_invoke_atf(struct spl_image_info *spl_image)
 {
 	uintptr_t  bl32_entry = 0;
 	uintptr_t  bl33_entry = CONFIG_SYS_TEXT_BASE;
@@ -268,16 +268,26 @@ void spl_invoke_atf(struct spl_image_info *spl_image)
 	if (node >= 0)
 		bl32_entry = spl_fit_images_get_entry(blob, node);
 
+
+#ifdef CONFIG_SPL_OS_BOOT
 	/*
-	 * Find the U-Boot binary (in /fit-images) load addreess or
+	 * Find the Linux kernel binary (in /fit-images) load address or
 	 * entry point (if different) and pass it as the BL3-3 entry
 	 * point.
-	 * This will need to be extended to support Falcon mode.
 	 */
-
+	node = spl_fit_images_find(blob, IH_OS_LINUX);
+	if (node >= 0)
+		bl33_entry = spl_fit_images_get_entry(blob, node);
+#else
+	/*
+	 * Find the U-Boot binary (in /fit-images) load address or
+	 * entry point (if different) and pass it as the BL3-3 entry
+	 * point.
+	 */
 	node = spl_fit_images_find(blob, IH_OS_U_BOOT);
 	if (node >= 0)
 		bl33_entry = spl_fit_images_get_entry(blob, node);
+#endif
 
 	/*
 	 * If ATF_NO_PLATFORM_PARAM is set, we override the platform

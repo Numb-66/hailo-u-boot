@@ -7,12 +7,40 @@
 #include <spl.h>
 #include <env.h>
 #include <hang.h>
+#include <init.h>
+#include <cpu_func.h>
 #include "hailo15_board.h"
 #ifdef CONFIG_SPL_ENV_IS_IN_MMC
 #include "mmc.h"
 #endif
 
 #define BASE_SPI_FLASH_ADDRESS 0x70000000
+
+DECLARE_GLOBAL_DATA_PTR;
+
+void board_init_f(ulong dummy)
+{
+	/* we enable MMU + caching before doing anything else to improve performace */
+	gd->relocaddr = PHYS_SDRAM_1 + CONFIG_HAILO15_SPL_DRAM_SIZE;
+	arch_reserve_mmu();
+	icache_enable();
+	dcache_enable();
+
+	/* this part is the same as board_init_f in common/spl/spl.c */
+
+	if (CONFIG_IS_ENABLED(OF_CONTROL)) {
+		int ret;
+
+		ret = spl_early_init();
+		if (ret) {
+			debug("spl_early_init() failed: %d\n", ret);
+			hang();
+		}
+	}
+
+       preloader_console_init();
+
+}
 
 void spl_board_init(void)
 {
@@ -25,6 +53,12 @@ void spl_board_init(void)
 	if (hailo15_scmi_check_version_match()) {
 		hang();
 	}
+}
+
+void spl_board_prepare_for_boot(void)
+{
+	dcache_disable();
+	icache_disable();
 }
 
 void board_boot_order(u32 *spl_boot_list)

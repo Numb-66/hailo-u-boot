@@ -30,10 +30,6 @@ config MACH_HAILO15_FAMILY
 	select SPI_FLASH
 	select DM_ETH
 	select MACB
-	select DM_MMC
-	select MMC_SDHCI
-	select MMC_SDHCI_SNPS
-	select MMC_SDHCI_ADMA
 	select DM_GPIO
 	select CLK
 	select CLK_SCMI
@@ -53,42 +49,35 @@ config MACH_HAILO15_FAMILY
 	select DM_I2C
 	select SYS_I2C_DW
 	select SPL
+	select SPL_USE_ARCH_MEMSET
+	select SPL_USE_ARCH_MEMCPY
 	select SPL_DM
-	select SPL_MMC_WRITE
+	# due to issue MSW-4053, we must enable MMC write in SPL even though we only do read,
+	# since the changes this makes to the SD initalization flow enables some SD cards to work.
+	select SPL_MMC_WRITE if SPL_MMC
 	select SPL_DM_MAILBOX
 	select SPL_LIBCOMMON_SUPPORT
 	select SPL_LIBGENERIC_SUPPORT
 	select SPL_OF_CONTROL
 	select SPL_SERIAL
-	select SPL_FRAMEWORK_BOARD_INIT_F
 	select SPL_CLK
 	select SPL_DM_RESET
 	select SPL_FIRMWARE
 	select SPL_OF_TRANSLATE
 	select SPL_SEPARATE_BSS
 	select SPL_ENV_SUPPORT
-	select SPL_DM_SPI
-	select SPL_DM_SPI_FLASH
-	select SPL_SPI
-	select SPL_SPI_FLASH_SUPPORT
-	select SPL_NOR_SUPPORT
-	select SPL_DM_SEQ_ALIAS
-	select SPL_EFI_PARTITION
 	select SPL_ATF
 	select SPL_LOAD_FIT
 	select SPL_FIT_SIGNATURE
 	select FIT_SIGNATURE
 	select SYS_RESET_SCTRL # TODO: understand why this
 	select TFABOOT
-	select WATCHDOG
-	select SPL_WDT
-	select SPL_WATCHDOG
-	select WDT
-	select WDT_SP805
 	select SPL_BOARD_INIT
 	select PSCI_RESET
 	select SYSRESET
 	select SYSRESET_PSCI
+	select ARMV8_CRYPTO
+    imply OF_LIBFDT_OVERLAY
 	imply CMD_DM
 	imply CMD_SF
 	imply CMD_NET
@@ -100,11 +89,22 @@ config MACH_HAILO15_FAMILY
 	imply CMD_MMC
 	imply CMD_FAT
 	imply CMD_WDT
+	imply SPL_DM_SPI
+	imply SPL_DM_SPI_FLASH
+	imply SPL_SPI
+	imply SPL_SPI_FLASH_SUPPORT
+	imply SPL_NOR_SUPPORT
+	imply SPL_DM_SEQ_ALIAS
+	imply SPL_EFI_PARTITION
+	imply WATCHDOG
+	imply SPL_WDT
+	imply SPL_WATCHDOG
+	imply WDT
+	imply WDT_SP805
 	imply FS_FAT
 	imply FAT_WRITE
 	imply CMD_BOOTMENU
 	imply PARTITION_TYPE_GUID
-	imply MENU
 	imply AUTOBOOT_MENU_SHOW
 	imply CMD_MEMTEST
 	imply CMD_MII
@@ -120,13 +120,17 @@ config MACH_HAILO15_FAMILY
 	imply CMD_GPIO
 	imply DM_GPIO
 	imply GPIO_HOG
+	imply DM_MMC
+	imply MMC_SDHCI
+	imply MMC_SDHCI_SNPS
+	imply MMC_SDHCI_ADMA
 
 config MACH_HAILO15
 	bool
 	select MACH_HAILO15_FAMILY
 	imply ENV_IS_IN_SPI_FLASH
 	imply SPL_ENV_IS_IN_SPI_FLASH
-	select CADENCE_QSPI
+	imply CADENCE_QSPI
 	imply SPL_FS_FAT
 
 config MACH_HAILO15L
@@ -135,12 +139,14 @@ config MACH_HAILO15L
 	imply ENV_IS_IN_MMC
 	imply SPL_ENV_IS_IN_MMC
 	imply SPL_MMC
+	imply ENV_IS_IN_SPI_FLASH
+	imply SPL_ENV_IS_IN_SPI_FLASH
 	select HAILO_XSPI
 	select SPL_RAM_SUPPORT
 	select SPL_RAM_DEVICE
 	select SUPPORT_RAW_INITRD
 	imply SUPPORT_EMMC_BOOT
-	imply SYS_MMCSD_RAW_MODE_EMMC_BOOT_PARTITION
+	imply SUPPORT_EMMC_BOOT_OVERRIDE_PART_CONFIG
 	imply SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR
 
 config MACH_HAILO10
@@ -198,7 +204,11 @@ config SPL_SIZE_LIMIT
 	default 0x2C000
 
 config SPL_SYS_MALLOC_F_LEN
-	default 0x81f000
+	default 0x2000000
+
+config HAILO15_SPL_DRAM_SIZE
+	hex "Hailo15 SPL DRAM size"
+	default 0x10000000
 
 config HAILO15_DTB_ADDRESS
 	hex "Hailo15 DTB load address"
@@ -271,12 +281,11 @@ config BAUDRATE
 
 endif
 
-if MACH_HAILO15L || MACH_HAILO10
-
 config SPL_LOAD_FIT_ADDRESS
-	default 0x86000000
-
-endif
+	# 0x86000000 is the u-boot-tfa.itb address in boot from RAM/Pcie, and it is used when not in falcon mode [when not skipping u-boot proper].
+	default 0x86000000 if !SPL_OS_BOOT
+	# 0x87000000 is the fitImage address in boot from RAM/Pcie, and it is used when in falcon mode [when skipping u-boot proper].
+	default 0x87000000 if SPL_OS_BOOT
 
 config TARGET_HAILO15_VP
 	bool "Hailo15 VP"

@@ -13,6 +13,8 @@
 
 /* reserve memory for secondary cores' spin-table */
 /memreserve/ 0x800FF000 0x0001000;
+/* reserver memory for device tree and overlay */
+/memreserve/ 0x84800000 0x0200000;
 /memreserve/ CONFIG_HAILO15_DTB_ADDRESS CONFIG_HAILO15_DTB_MAX_SIZE;
 
 / {
@@ -38,7 +40,6 @@
     hailo_boot_info: hailo_boot_info@0 {
         compatible = "hailo,boot-info";
         dtb-ddr-load-address = <0x0 CONFIG_HAILO15_DTB_ADDRESS 0x0 CONFIG_HAILO15_DTB_MAX_SIZE>;
-        shutdown-gpio-pin = <20>;
 
 #ifdef CONFIG_HAILO15_ENABLE_CORESIGHT_AT_BOOT
         connectivity {

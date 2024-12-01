@@ -22,3 +22,9 @@
         full-duplex;
     };
 };
+
+&hailo_boot_info {
+	ddr_config {
+		bist_enable = <0>;
+    };
+};
