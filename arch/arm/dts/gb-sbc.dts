@@ -1,0 +1,142 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * dts file for Hailo15 SoC
+ *
+ * Copyright (c) 2019-2023 Hailo Technologies Ltd. All rights reserved.
+ */
+
+#include "hailo15-base.dtsi"
+#include "hailo15_ddr_configuration.dtsi"
+
+#include "hailo15_ddr_MT53E512M32D1-046_regconfig_2GB.dtsi"
+//#include "hailo15_ddr_MT53E2G32D4DE-046_regconfig_8GB.dtsi"
+//#include "hailo15_ddr_MT53E1G32D2FW-046_regconfig_ca_odtb_pu_4GB.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+
+&sdio0 {
+    status = "okay";
+    sdhci-caps = <0 0x01000000>; // Force VOLT33 capability
+    phy-config {
+            card-is-emmc = <0x0>;
+            cmd-pad-values = <0x1 0x3 0x1 0x1>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
+            dat-pad-values = <0x1 0x3 0x1 0x1>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
+            rst-pad-values = <0x1 0x3 0x1 0x1>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
+            clk-pad-values = <0x1 0x3 0x0 0x1>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
+            sdclkdl-cnfg = <0x1 0x7F>; //extdly_en, cckdl_dc
+            drive-strength = <0x9 0x8>; //pad_sp, pad_sn
+            u-boot,dm-spl;
+    };
+};
+&sdio1 {
+    status = "okay";
+    non-removable;
+    phy-config {
+            card-is-emmc = <0x1>;
+            cmd-pad-values = <0x2 0x2 0x1 0x1>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
+            dat-pad-values = <0x2 0x2 0x1 0x1>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
+            rst-pad-values = <0x2 0x2 0x1 0x1>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
+            clk-pad-values = <0x2 0x2 0x0 0x0>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
+            sdclkdl-cnfg = <0x1 0x59>; //extdly_en, cckdl_dc
+            drive-strength = <0x9 0x8>; //pad_sp, pad_sn 
+            u-boot,dm-spl;
+    };
+};
+
+&macb {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_eth>;
+    hailo,tx-clock-delay = <6>;
+    phy-mode = "rmii";
+};
+
+&pinctrl {
+    pinctrl_eth: eth {
+        pins = "eth_rgmii_tx_clk",
+               "eth_rgmii_tx_ctl",
+               "eth_rgmii_txd_0",
+               "eth_rgmii_txd_1",
+               "eth_rgmii_txd_2",
+               "eth_rgmii_txd_3";
+        drive-strength = <2>;
+    };
+};
+
+&i2c_0 {
+    status = "okay";
+};
+
+&i2c_1 {
+    status = "okay";
+};
+
+&gpio0 {
+    gpio-ranges = <&pinctrl 0 0 16>;
+
+    gpio-line-names =
+        "NC",
+        "NC",
+        "NC",
+        "NC",
+        "SEN_MCU_RX",
+        "MCU_ZB_RX",
+        "SEN_MCU_TX",
+        "MCU_ZB_TX",
+        "NC",
+        "SD_SEL",
+        "MCU_TCK",
+        "MCU_TDIO_RST_N",
+        "NC",
+        "ZIGBEE_RST_N",
+        "NC",
+        "NC";
+};
+
+&gpio1 {
+    gpio-ranges = <&pinctrl 0 16 16>;
+
+    gpio-line-names =
+        "IP_ID0",
+        "IP_ID1",
+        "AUD_RST_N",
+        "AUD_EN",
+        "SEN_RST_N",
+        "ETH_RST_N",
+        "NC",
+        "NR_ON_OFF",
+        "GYRO_INT_N",
+        "NC",
+        "NC",
+        "NC",
+        "NC",
+        "TCK_RTSn_SoC",
+        "TDIO_DTRn_SoC",
+        "NC";
+
+    eth_rst_n {
+
+        gpio-hog;
+
+        gpios = <5 GPIO_ACTIVE_HIGH>;
+
+        output-high;
+
+        line-name = "gpio_21";
+
+    };
+
+    //Temp solution to control the power of audio EN which is also used for ethernet power, this is is to prevent HW work around only.
+    aud_eth_power_n {
+
+        gpio-hog;
+
+        gpios = <3 GPIO_ACTIVE_HIGH>;
+
+        output-high;
+
+        line-name = "gpio_19";
+
+    };
+
+};
