@@ -197,11 +197,11 @@ int hailo15_scmi_check_version_match(void)
 	}
 
 	if (fw_version != impl_version) {
-		printf("Firmware version mismatch: u-boot(devicetree)=0x%x, fw=0x%x\n", fw_version, impl_version);
+		printf("Firmware scmi version mismatch: u-boot(devicetree)=0x%x, fw=0x%x\n", fw_version, impl_version);
 		return -EPERM;
 	}
-	if (SCU_FW_BUILD_VERSION != impl_version) {
-		printf("Firmware version mismatch: u-boot(binary)=0x%x, fw=0x%x\n", SCU_FW_BUILD_VERSION, impl_version);
+	if (SCU_FW_SCMI_VERSION != impl_version) {
+		printf("Firmware scmi version mismatch: u-boot(binary)=0x%x, fw=0x%x\n", SCU_FW_SCMI_VERSION, impl_version);
 		return -EPERM;
 	}
 	return 0;
@@ -387,16 +387,10 @@ int fdt_dram_cfg_get(void)
 		return -EINVAL;
 	}
 
-	hailo15_dram_cfg.bank_total_size = hailo15_dram_cfg.rank_capacity;
-	hailo15_dram_cfg.bank_usable_size = hailo15_dram_cfg.rank_capacity;
+	hailo15_dram_cfg.bank_total_size = hailo15_dram_cfg.rank_capacity * hailo15_dram_cfg.num_of_ranks;
+	hailo15_dram_cfg.bank_usable_size = hailo15_dram_cfg.bank_total_size;
 	if (hailo15_dram_cfg.ecc_enable) {
-		hailo15_dram_cfg.bank_usable_size = hailo15_dram_cfg.rank_capacity * 7ULL / 8ULL;
-	}
-
-	if (hailo15_dram_cfg.num_of_ranks == 1) {
-		/* Split total/usable size by 2 (Since CONFIG_NR_DRAM_BANKS=2) */
-		hailo15_dram_cfg.bank_usable_size /= 2;
-		hailo15_dram_cfg.bank_total_size = hailo15_dram_cfg.bank_usable_size;
+		hailo15_dram_cfg.bank_usable_size = hailo15_dram_cfg.bank_total_size * 7ULL / 8ULL;
 	}
 
 	return 0;
@@ -410,16 +404,9 @@ int dram_init(void)
 		return ret;
 	}
 
-	/* memory map setup 1'st bank */
-	hailo15_mem_map[0].phys = PHYS_SDRAM_1;
-	hailo15_mem_map[0].virt = PHYS_SDRAM_1;
 	hailo15_mem_map[0].size = hailo15_dram_cfg.bank_usable_size;
-	/* memory map setup 2'nd bank with contiguous virtual addressing */
-	hailo15_mem_map[1].phys = PHYS_SDRAM_1 + hailo15_dram_cfg.bank_total_size;
-	hailo15_mem_map[1].virt = PHYS_SDRAM_1 + hailo15_dram_cfg.bank_total_size;
-	hailo15_mem_map[1].size = hailo15_dram_cfg.bank_usable_size;
 
-	gd->ram_size = hailo15_mem_map[0].size + hailo15_mem_map[1].size;
+	gd->ram_size = hailo15_mem_map[0].size;
 
 	return 0;
 }
@@ -434,12 +421,8 @@ int dram_init_banksize(void)
 		return ret;
 	}
 
-	/* 1'st DRAM bank */
 	gd->bd->bi_dram[0].start = PHYS_SDRAM_1;
 	gd->bd->bi_dram[0].size = hailo15_dram_cfg.bank_usable_size;
-	/* 2'nd DRAM bank */
-	gd->bd->bi_dram[1].start = PHYS_SDRAM_1 + hailo15_dram_cfg.bank_total_size;
-	gd->bd->bi_dram[1].size = hailo15_dram_cfg.bank_usable_size;
 
 	return 0;
 }

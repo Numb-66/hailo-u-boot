@@ -141,7 +141,7 @@
             shmem = <&cpu_scp_tx>;
             #address-cells = <1>;
             #size-cells = <0>;
-            fw-ver = <SCU_FW_BUILD_VERSION>;
+            fw-ver = <SCU_FW_SCMI_VERSION>;
             scmi_timeout = <1000000>;
             u-boot,dm-spl;
             scmi_clk: protocol@14 {

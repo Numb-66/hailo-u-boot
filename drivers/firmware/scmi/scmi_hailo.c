@@ -4,6 +4,7 @@
 #include <scmi_protocols.h>
 
 #include <scmi_hailo.h>
+#include <dt-bindings/soc/hailo15_release_version.h>
 
 struct scmi_hailo_empty_in {};
 struct scmi_hailo_empty_out {};
@@ -82,6 +83,7 @@ int scmi_hailo_send_boot_success_ind(struct udevice *dev) {
 	int ret;
 	struct scmi_hailo_boot_success_indication_a2p in = {
 			.component = SCMI_HAILO_BOOT_SUCCESS_COMPONENT_AP_BOOTLOADER,
+			.component_version = HAILO_UBOOT_RELEASE_BUILD_VERSION,
 	};
 	DECLARE_SCMI_HAILO_OUT(scmi_hailo_empty_out, out);
 
