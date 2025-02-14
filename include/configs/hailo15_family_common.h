@@ -149,7 +149,7 @@
     "download_fitimage_to_ram=tftpboot ${far_ram_addr} fitImage\0" \
     "dtb_overlays= \0" /* added space otherwise it gets removed */ \
     "download_uboot_to_ram=tftpboot ${far_ram_addr} " CONFIG_SPL_FS_LOAD_PAYLOAD_NAME "\0" \
-    "boot_mmc=run bootargs_base bootargs_mmc && run load_fitimage_from_mmc && bootm ${far_ram_addr}#conf-hailo_${machine_name}.dtb${dtb_overlays}\0" \
+    "boot_mmc=run bootargs_base bootargs_mmc && run load_fitimage_from_mmc && bootm ${far_ram_addr}#conf-" CONFIG_SYS_VENDOR "_${machine_name}.dtb${dtb_overlays}\0" \
     "boot_mmc0=run set_mmc0_device_num && run boot_mmc\0"\
     "boot_mmc1=run set_mmc1_device_num && run boot_mmc\0"\
     "update_wic=run download_wic_to_ram && run write_wic_to_mmc\0" \
