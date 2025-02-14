@@ -349,6 +349,10 @@ config TARGET_HAILO10_M2_DEVEL
 	bool "Hailo10 M.2 development"
 	select MACH_HAILO10
 
+config TARGET_GB_SBC
+	bool "Greenbase SBC"
+	select MACH_HAILO15
+
 source "board/hailo/hailo15-vp/Kconfig"
 source "board/hailo/hailo15-ginger-soc/Kconfig"
 source "board/hailo/hailo15-ginger-soc-sdio0/Kconfig"
@@ -363,5 +367,6 @@ source "board/hailo/hailo15l-evb/Kconfig"
 source "board/hailo/hailo15l-sbc/Kconfig"
 source "board/hailo/hailo10-m2/Kconfig"
 source "board/hailo/hailo10-m2-devel/Kconfig"
+source "board/greenbase/gb-sbc/Kconfig"
 
 endif

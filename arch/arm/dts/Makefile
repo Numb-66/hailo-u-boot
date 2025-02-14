@@ -1178,6 +1178,7 @@ dtb-$(CONFIG_TARGET_HAILO15L_EVB) += hailo15l-evb.dtb
 dtb-$(CONFIG_TARGET_HAILO15L_SBC) += hailo15l-sbc.dtb
 dtb-$(CONFIG_TARGET_HAILO10_M2) += hailo10-m2.dtb
 dtb-$(CONFIG_TARGET_HAILO10_M2_DEVEL) += hailo10-m2-devel.dtb
+dtb-$(CONFIG_TARGET_GB_SBC) += gb-sbc.dtb
 
 targets += $(dtb-y)
 
