@@ -164,7 +164,7 @@ __weak void set_mac_addr(void)
 			printf("Default using MAC address from environment\n");
 		}
 	}
-	
+
 }
 #endif
 ulong hailo15_get_active_boot_image_offset(void)

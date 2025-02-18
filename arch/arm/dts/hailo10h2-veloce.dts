@@ -1,0 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * dts file for Hailo15 mint SoC
+ *
+ * Copyright (c) 2019-2024 Hailo Technologies Ltd. All rights reserved.
+ */
+
+#include "hailo10h2-base.dtsi"
+#include "hailo15_ddr_configuration.dtsi"
+#include "hailo15_ddr_MT53E512M32D1-046_regconfig_2GB.dtsi" // 2GB ddr
+
+&hailo_boot_info {
+	ddr_config {
+		bist_enable = <0>;
+	};
+};

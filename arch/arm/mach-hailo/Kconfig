@@ -153,6 +153,10 @@ config MACH_HAILO10
 	bool
 	select MACH_HAILO15_FAMILY
 
+config MACH_HAILO10H2
+	bool
+	select MACH_HAILO15_FAMILY
+
 if MACH_HAILO15_FAMILY
 
 config CORE_IMAGE_NAME
@@ -329,6 +333,10 @@ config TARGET_HAILO15_SBC
 	bool "Hailo15 SBC"
 	select MACH_HAILO15
 
+config TARGET_HAILO15_SBC_REV3
+	bool "Hailo15 SBC REV3"
+	select MACH_HAILO15
+
 config TARGET_HAILO15L_OREGANO
 	bool "Hailo15L Oregano"
 	select MACH_HAILO15L
@@ -349,6 +357,19 @@ config TARGET_HAILO10_M2_DEVEL
 	bool "Hailo10 M.2 development"
 	select MACH_HAILO10
 
+config TARGET_HAILO10H2
+	bool "Hailo10H2"
+	select MACH_HAILO10H2
+
+config TARGET_HAILO10H2_VELOCE
+	bool "Hailo10H2 VELOCE"
+	select MACH_HAILO10H2
+	select HAILO_VELOCE
+
+config TARGET_HAILO10H2_MINT
+	bool "Hailo10H2 Mint"
+	select MACH_HAILO10H2
+
 source "board/hailo/hailo15-vp/Kconfig"
 source "board/hailo/hailo15-ginger-soc/Kconfig"
 source "board/hailo/hailo15-ginger-soc-sdio0/Kconfig"
@@ -358,10 +379,14 @@ source "board/hailo/hailo15l-veloce/Kconfig"
 source "board/hailo/hailo15-evb-2-camera-vpu/Kconfig"
 source "board/hailo/hailo15-evb-security-camera/Kconfig"
 source "board/hailo/hailo15-sbc/Kconfig"
+source "board/hailo/hailo15-sbc-rev3/Kconfig"
 source "board/hailo/hailo15l-oregano/Kconfig"
 source "board/hailo/hailo15l-evb/Kconfig"
 source "board/hailo/hailo15l-sbc/Kconfig"
 source "board/hailo/hailo10-m2/Kconfig"
 source "board/hailo/hailo10-m2-devel/Kconfig"
+source "board/hailo/hailo10h2-board/Kconfig"
+source "board/hailo/hailo10h2-veloce/Kconfig"
+source "board/hailo/hailo10h2-mint/Kconfig"
 
 endif

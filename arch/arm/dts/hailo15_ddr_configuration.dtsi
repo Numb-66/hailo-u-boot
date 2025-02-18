@@ -29,7 +29,7 @@
 		periodic_rdlvl_training_enable = <0>;
 		periodic_rdlvl_gate_training_enable = <0>;
 		periodic_wdqlvl_training_enable = <0>;
-		dram_auto_low_power_mode = <DRAM_AUTO_LOW_POWER_MODE_DISABLED>;
-		ddr_phy_low_power_mode = <DDR_PHY_LOW_POWER_MODE_DISBALED>;
+		dram_auto_low_power_mode = <DRAM_AUTO_LOW_POWER_MODE_AUTOMATIC_INTERFACE>;
+		ddr_phy_low_power_mode = <DDR_PHY_LOW_POWER_MODE_LIGHT_SLEEP>;
 	};
 };
