@@ -1,0 +1,12 @@
+if TARGET_GB_SBC
+
+config SYS_BOARD
+	default "gb-sbc"
+
+config SYS_VENDOR
+	default "greenbase"
+
+config SYS_CONFIG_NAME
+	default "gb-sbc"
+
+endif
