@@ -358,11 +358,6 @@ config TARGET_HAILO10_M2_DEVEL
 	bool "Hailo10 M.2 development"
 	select MACH_HAILO10
 
-<<<<<<< HEAD
-config TARGET_GB_SBC
-	bool "Greenbase SBC"
-	select MACH_HAILO15
-=======
 config TARGET_HAILO10H2
 	bool "Hailo10H2"
 	select MACH_HAILO10H2
@@ -379,7 +374,10 @@ config TARGET_HAILO10H2_MINT
 config TARGET_HAILO10H2_MAPLE
 	bool "Hailo10H2 Maple"
 	select MACH_HAILO10H2
->>>>>>> upstream/1.6.2-dev0
+
+config TARGET_GB_SBC
+	bool "Greenbase SBC"
+	select MACH_HAILO15
 
 source "board/hailo/hailo15-vp/Kconfig"
 source "board/hailo/hailo15-ginger-soc/Kconfig"
