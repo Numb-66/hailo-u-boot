@@ -2,11 +2,11 @@
 /*
  * Copyright (c) 2019-2024 Hailo Technologies Ltd. All rights reserved.
  *
- * Configuration for Mint Hailo10H2.
+ * Configuration for Maple Hailo10H2.
  */
 
-#ifndef __HAILO10H2_MINT_H
-#define __HAILO10H2_MINT_H
+#ifndef __HAILO10H2_MAPLE_H
+#define __HAILO10H2_MAPLE_H
 
 #define SPL_BOOT_SOURCE "ram"
 // #define SPL_BOOT_SOURCE "nor"
@@ -38,4 +38,4 @@
 
 #define PHYS_SDRAM_1_SIZE (0x80000000)
 
-#endif /* __HAILO10H2_MINT_H */
+#endif /* __HAILO10H2_MAPLE_H */
