@@ -48,6 +48,7 @@ config MACH_HAILO15_FAMILY
 	select PINCTRL_HAILO15
 	select DM_I2C
 	select SYS_I2C_DW
+	select ENV_VARS_UBOOT_CONFIG
 	select SPL
 	select SPL_USE_ARCH_MEMSET
 	select SPL_USE_ARCH_MEMCPY
@@ -150,6 +151,10 @@ config MACH_HAILO15L
 	imply SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR
 
 config MACH_HAILO10
+	bool
+	select MACH_HAILO15_FAMILY
+
+config MACH_HAILO10H2
 	bool
 	select MACH_HAILO15_FAMILY
 
@@ -329,6 +334,10 @@ config TARGET_HAILO15_SBC
 	bool "Hailo15 SBC"
 	select MACH_HAILO15
 
+config TARGET_HAILO15_SBC_REV3
+	bool "Hailo15 SBC REV3"
+	select MACH_HAILO15
+
 config TARGET_HAILO15L_OREGANO
 	bool "Hailo15L Oregano"
 	select MACH_HAILO15L
@@ -353,6 +362,24 @@ config TARGET_GB_SBC
 	bool "Greenbase SBC"
 	select MACH_HAILO15
 
+config TARGET_HAILO10H2
+	bool "Hailo10H2"
+	select MACH_HAILO10H2
+
+config TARGET_HAILO10H2_VELOCE
+	bool "Hailo10H2 VELOCE"
+	select MACH_HAILO10H2
+	select HAILO_VELOCE
+
+config TARGET_HAILO10H2_MINT
+	bool "Hailo10H2 Mint"
+	select MACH_HAILO10H2
+
+config TARGET_HAILO10H2_MAPLE
+	bool "Hailo10H2 Maple"
+	select MACH_HAILO10H2
+>>>>>>> upstream/1.7.1
+
 source "board/hailo/hailo15-vp/Kconfig"
 source "board/hailo/hailo15-ginger-soc/Kconfig"
 source "board/hailo/hailo15-ginger-soc-sdio0/Kconfig"
@@ -362,11 +389,16 @@ source "board/hailo/hailo15l-veloce/Kconfig"
 source "board/hailo/hailo15-evb-2-camera-vpu/Kconfig"
 source "board/hailo/hailo15-evb-security-camera/Kconfig"
 source "board/hailo/hailo15-sbc/Kconfig"
+source "board/hailo/hailo15-sbc-rev3/Kconfig"
 source "board/hailo/hailo15l-oregano/Kconfig"
 source "board/hailo/hailo15l-evb/Kconfig"
 source "board/hailo/hailo15l-sbc/Kconfig"
 source "board/hailo/hailo10-m2/Kconfig"
 source "board/hailo/hailo10-m2-devel/Kconfig"
+source "board/hailo/hailo10h2-board/Kconfig"
+source "board/hailo/hailo10h2-veloce/Kconfig"
+source "board/hailo/hailo10h2-mint/Kconfig"
+source "board/hailo/hailo10h2-maple/Kconfig"
 source "board/greenbase/gb-sbc/Kconfig"
 
 endif

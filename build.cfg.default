@@ -1,0 +1,23 @@
+# this is the default configuration for the build.sh script
+# to change the configuration simply do:
+#    cp build.cfg.default build.cfg
+# and edit build.cfg
+#
+
+# toolchain environment setup path
+TOOLCHAIN="/opt/poky/4.0.2/environment-setup-armv8a-poky-linux"
+
+# meta-hailo-bsp directory path (SCRIPT_PATH points to the root of this repo)
+BSP_DIR=$(realpath ${SCRIPT_PATH}/../hailo-yocto-validation/meta-hailo-bsp/)
+
+# cryptocell-312-runtime directory path (SCRIPT_PATH points to the root of this repo)
+CC_DIR=$(realpath ${SCRIPT_PATH}/../cryptocell-312-runtime)
+
+# set the DEPLOY_DIR into which we deploy the directory
+# by default use the TFTP directory
+source /etc/default/tftpd-hpa
+DEPLOY_DIR=${TFTP_DIRECTORY}
+
+# by default we infer the board config to use (e.g. hailo15_sbc_defconfig, hailo15_security_camera_defconfig)
+# from the content of DEPLOY_DIR however setting it here is also supported. uncomment the following line:
+#BOARD="hailo15-sbc"

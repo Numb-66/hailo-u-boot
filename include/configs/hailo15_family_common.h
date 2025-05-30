@@ -30,6 +30,13 @@
 // Dummy value
 #define CONFIG_SYS_UBOOT_BASE 0
 
+#ifndef BOOTARGS_BASE
+#define BOOTARGS_BASE "console=ttyS1,${baudrate}n8 earlycon loglevel=8 rootwait debug"
+#endif
+#ifndef DEFAULT_BOOTDELAY
+#define DEFAULT_BOOTDELAY "2"
+#endif
+
 #ifdef CONFIG_HAILO15_SWUPDATE
 
 #ifndef SWUPDATE_MMC_INDEX
@@ -38,11 +45,11 @@
 
 #define SWUPDATE_EXTRA_ENV_SETTINGS \
     "swupdate_ram_addr=0xB0000000\0" \
-    "load_swupdate_image_from_mmc=" UNNEEDED_MMCINFO_HACK " fatload mmc ${device_num}:${mmc_boot_partition} ${swupdate_ram_addr} swupdate-image-${machine_name}.ext4.gz && setenv swupdate_filesize ${filesize}\0" \
-    "write_swupdate_image_to_mmc=" UNNEEDED_MMCINFO_HACK " fatwrite mmc ${device_num}:${mmc_boot_partition} ${swupdate_ram_addr} swupdate-image-${machine_name}.ext4.gz ${filesize}\0" \
-    "download_swupdate_image_to_ram= tftpboot ${swupdate_ram_addr} swupdate-image-${machine_name}.ext4.gz && setenv swupdate_filesize ${filesize}\0" \
+    "load_swupdate_image_from_mmc=" UNNEEDED_MMCINFO_HACK " fatload mmc ${device_num}:${mmc_boot_partition} ${swupdate_ram_addr} swupdate-image-${board}.ext4.gz && setenv swupdate_filesize ${filesize}\0" \
+    "write_swupdate_image_to_mmc=" UNNEEDED_MMCINFO_HACK " fatwrite mmc ${device_num}:${mmc_boot_partition} ${swupdate_ram_addr} swupdate-image-${board}.ext4.gz ${filesize}\0" \
+    "download_swupdate_image_to_ram= tftpboot ${swupdate_ram_addr} swupdate-image-${board}.ext4.gz && setenv swupdate_filesize ${filesize}\0" \
     "swupdate_server_udp_logging_port=12345\0" \
-    "setup_swupdate_update_filename=setenv swupdate_update_filename hailo-update-image-${machine_name}.swu\0" \
+    "setup_swupdate_update_filename=setenv swupdate_update_filename hailo-update-image-${board}.swu\0" \
     "swupdate_update_modes=init-partitions-single,init-scu-bl,copy-a\0" \
     "bootargs_swupdate=run setup_swupdate_update_filename && setenv bootargs ${bootargs} SWUPDATE_SERVER_IP=${serverip} SWUPDATE_SERVER_UDP_LOGGING_PORT=${swupdate_server_udp_logging_port} SWUPDATE_UPDATE_FILENAME=${swupdate_update_filename} SWUPDATE_UPDATE_MODES=${swupdate_update_modes}\0" \
     "swupdate_load_mmc=run set_mmc" SWUPDATE_MMC_INDEX "_device_num && run load_fitimage_from_mmc && run load_swupdate_image_from_mmc\0" \
@@ -119,7 +126,7 @@
 #define UNNEEDED_MMCINFO_HACK "mmcinfo;"
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-    "bootargs_base=setenv bootargs console=ttyS1,${baudrate}n8 earlycon loglevel=8 rootwait debug rw && run bootargs_board\0" \
+    "bootargs_base=setenv bootargs rw " BOOTARGS_BASE " && run bootargs_board\0" \
     "bootargs_board=setenv bootargs ${bootargs} ${bootargs_board_options}\0" \
     "bootargs_ram=setenv bootargs ${bootargs} root=/dev/ram0 ramdisk_size=${ramdisk_size}\0" \
     "bootargs_mmc=setenv bootargs ${bootargs} root=/dev/mmcblk${device_num}p${mmc_rootfs_partition}\0" \
@@ -132,7 +139,6 @@
     "ipaddr=10.0.0.1\0" \
     "initrd_high=0xffffffffffffffff\0" /* disables relocation of initrd/initramfs - this saves a significant amount of boot time */ \
     "core_image_name=" CONFIG_CORE_IMAGE_NAME "\0" \
-    "machine_name=" CONFIG_SYS_BOARD "\0" \
     "set_mmc0_device_num= setenv device_num 0 && mmc dev ${device_num}\0" \
     "set_mmc1_device_num= setenv device_num 1 && mmc dev ${device_num}\0" \
     "load_fitimage_from_mmc=" UNNEEDED_MMCINFO_HACK " fatload mmc ${device_num}:${mmc_boot_partition} ${far_ram_addr} fitImage\0" \
@@ -144,12 +150,13 @@
     "write_wic_to_mmc=setexpr wic_sdblock_count ${filesize} / ${sd_block_size} && setexpr wic_sdblock_count ${wic_sdblock_count} + 1; " UNNEEDED_MMCINFO_HACK " mmc write ${far_ram_addr} 0 ${wic_sdblock_count}\0" \
     "write_rootfs_to_mmc=setexpr rootfs_sdblock_count ${filesize} / ${sd_block_size} && setexpr rootfs_sdblock_count ${rootfs_sdblock_count} + 1; " UNNEEDED_MMCINFO_HACK " run get_rootfs_partition_start_offset && mmc write ${far_ram_addr} ${rootfs_partition_start_offset} ${rootfs_sdblock_count}\0" \
     /* tftpboot sets filesize to the size it loaded */\
-    "download_wic_to_ram=tftpboot ${far_ram_addr} ${core_image_name}-${machine_name}.wic\0" \
-    "download_rootfs_to_ram=tftpboot ${far_ram_addr} ${core_image_name}-${machine_name}.ext4\0" \
+    "download_wic_to_ram=tftpboot ${far_ram_addr} ${core_image_name}-${board}.wic\0" \
+    "download_rootfs_to_ram=tftpboot ${far_ram_addr} ${core_image_name}-${board}.ext4\0" \
     "download_fitimage_to_ram=tftpboot ${far_ram_addr} fitImage\0" \
     "dtb_overlays= \0" /* added space otherwise it gets removed */ \
     "download_uboot_to_ram=tftpboot ${far_ram_addr} " CONFIG_SPL_FS_LOAD_PAYLOAD_NAME "\0" \
-    "boot_mmc=run bootargs_base bootargs_mmc && run load_fitimage_from_mmc && bootm ${far_ram_addr}#conf-" CONFIG_SYS_VENDOR "_${machine_name}.dtb${dtb_overlays}\0" \
+    "boot=bootm ${far_ram_addr}#conf-${vendor}_${board}.dtb${dtb_overlays}\0" \
+    "boot_mmc=run bootargs_base bootargs_mmc && run load_fitimage_from_mmc && run boot\0" \
     "boot_mmc0=run set_mmc0_device_num && run boot_mmc\0"\
     "boot_mmc1=run set_mmc1_device_num && run boot_mmc\0"\
     "update_wic=run download_wic_to_ram && run write_wic_to_mmc\0" \
@@ -162,10 +169,10 @@
     "update_partitions_mmc0=run set_mmc0_device_num && run update_partitions\0"\
     "update_partitions_mmc1=run set_mmc1_device_num && run update_partitions\0"\
     "nfsroot=/mnt/hailo15_nfs/\0"\
-    "bootnfs=run download_fitimage_to_ram && run bootargs_base bootargs_nfs && bootm ${far_ram_addr}\0" \
+    "bootnfs=run download_fitimage_to_ram && run bootargs_base bootargs_nfs && run boot\0" \
     "auto_uboot_update=run update_uboot_mmc0_mmc1; env set auto_uboot_update_enable no && env set spl_boot_source ${default_spl_boot_source} && env set bootdelay ${default_bootdelay} && saveenv\0" \
     "auto_uboot_update_enable=no\0" \
-    "default_bootdelay=2\0" \
+    "default_bootdelay=" DEFAULT_BOOTDELAY "\0" \
     BOOTMENU \
     UPDATE_PARTITIONS_COMMAND \
     SWUPDATE_EXTRA_ENV_SETTINGS \
