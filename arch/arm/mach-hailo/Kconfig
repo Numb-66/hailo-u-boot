@@ -378,7 +378,6 @@ config TARGET_HAILO10H2_MINT
 config TARGET_HAILO10H2_MAPLE
 	bool "Hailo10H2 Maple"
 	select MACH_HAILO10H2
->>>>>>> upstream/1.7.1
 
 source "board/hailo/hailo15-vp/Kconfig"
 source "board/hailo/hailo15-ginger-soc/Kconfig"
