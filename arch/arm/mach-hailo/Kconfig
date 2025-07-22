@@ -6,7 +6,7 @@ config SYS_ARCH
 config SYS_SOC
 	default "hailo"
 
-config MACH_HAILO15_FAMILY
+config MACH_HAILO1X
 	bool
 	select ARCH_SUPPORT_TFABOOT
 	select MISC_INIT_R
@@ -128,7 +128,7 @@ config MACH_HAILO15_FAMILY
 
 config MACH_HAILO15
 	bool
-	select MACH_HAILO15_FAMILY
+	select MACH_HAILO1X
 	imply ENV_IS_IN_SPI_FLASH
 	imply SPL_ENV_IS_IN_SPI_FLASH
 	imply CADENCE_QSPI
@@ -136,7 +136,7 @@ config MACH_HAILO15
 
 config MACH_HAILO15L
 	bool
-	select MACH_HAILO15_FAMILY
+	select MACH_HAILO1X
 	imply ENV_IS_IN_MMC
 	imply SPL_ENV_IS_IN_MMC
 	imply SPL_MMC
@@ -152,13 +152,13 @@ config MACH_HAILO15L
 
 config MACH_HAILO10
 	bool
-	select MACH_HAILO15_FAMILY
+	select MACH_HAILO1X
 
 config MACH_HAILO10H2
 	bool
-	select MACH_HAILO15_FAMILY
+	select MACH_HAILO1X
 
-if MACH_HAILO15_FAMILY
+if MACH_HAILO1X
 
 config CORE_IMAGE_NAME
 	string "Image Name"

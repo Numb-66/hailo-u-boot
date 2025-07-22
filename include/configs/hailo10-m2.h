@@ -23,6 +23,8 @@
 
 #endif /* CONFIG_SPL_BUILD */
 
+#define BOOTARGS_BASE "loglevel=3 quiet rootwait"
+
 #include "hailo15_common.h"
 
 /*! @note: lpddr4 inline ecc located at the top 1/8 of the referred CS.

@@ -6,6 +6,12 @@
  */
 
 #include "dt-bindings/soc/hailo15_ddr_config.h"
+#include "hailo15_ddr_base_regconfig.dtsi"
+#if (HAILO_SOC_TYPE == HAILO_SOC_HAILO15)
+	#include "hailo15_ddr_patch_include.dtsi"
+#elif (HAILO_SOC_TYPE == HAILO_SOC_HAILO15L)
+	#include "hailo15l_ddr_patch_include.dtsi"
+#endif
 
 &hailo_boot_info {
 	ddr_config {
@@ -17,6 +23,10 @@
 #endif
 		bist_enable = <1>;
 		operational_freq = <2>;
+		dram_auto_detect_en = <0>;
+		assembled_dram_pn = "";
+		layout_swizzling_config = <0x06173452 0x21043576 0x52016437 0x56247310>;
+		layout_byte_swap = <0x3 0x2 0x1 0x0>;
 		stop_before_controller_start = <0>;
 		f1_frequency = <1600000000>;
 		f2_frequency = <2133000000>;

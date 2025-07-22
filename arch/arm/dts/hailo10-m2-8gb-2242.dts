@@ -5,7 +5,4 @@
  * Copyright (c) 2019-2024 Hailo Technologies Ltd. All rights reserved.
  */
 #include "hailo10-m2-base.dtsi"
-
-&qspi {
-    status = "disabled";
-};
+#include "hailo15_ddr_MT53E2G32D4DE-046_regconfig_8GB_m2_2242.dtsi"

@@ -6,7 +6,7 @@
  */
 
 #define HAILO_SOC_TYPE HAILO_SOC_HAILO15L
-#include "hailo15-family-base.dtsi"
+#include "hailo1x-base.dtsi"
 
 / {
     pl320_mbox: mailbox@0 {

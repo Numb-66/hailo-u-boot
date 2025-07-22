@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 config PINCTRL_HAILO15
 	bool "HAILO15 pinctrl driver"
-	depends on MACH_HAILO15_FAMILY && PINCTRL
+	depends on MACH_HAILO1X && PINCTRL
 	help
 	  Say yes here to provide support for HAILO15 driver.
