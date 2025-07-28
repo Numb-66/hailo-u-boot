@@ -45,7 +45,7 @@
 };
 
 &wda53 {
-    status = "disabled";
+    status = "okay";
 };
 
 &hailo_boot_info {

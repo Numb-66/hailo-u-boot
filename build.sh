@@ -50,6 +50,18 @@ align_file() {
 if [ -z "$BOARD" ]; then
     BOARD=$(extract_board_defconfig)
 fi
+if [ -z "$SOC" ]; then
+    if [[ $BOARD == *hailo15l* ]]; then
+        SOC="hailo15l"
+    elif [[ $BOARD == *hailo15* || $BOARD == *hailo10* ]]; then
+        SOC="hailo15"
+    elif [[ $BOARD == *hailo10h2* ]]; then
+        SOC="hailo10h2"
+    else
+        echo "Unknown platform!"
+        exit 1
+    fi
+fi
 
 # Require success of commands
 set -e
@@ -87,8 +99,8 @@ build(){
     uboot-mkimage -f u-boot-tfa.its u-boot-tfa.itb
     uboot-mkimage -E -B 0x40 -F -k ${DEPLOY_DIR} -r u-boot-tfa.itb -K u-boot.dtb
 
-    ${BSP_DIR}/meta-hailo-bsp/recipes-bsp/hailo-secureboot-scripts-native/files/hailo15_boot_image_sign.sh ${CC_DIR} ${DEPLOY_DIR}/customer.key u-boot.dtb devicetree u-boot.dtb.signed
-    ${BSP_DIR}/meta-hailo-bsp/recipes-bsp/hailo-secureboot-scripts-native/files/hailo15_boot_image_sign.sh ${CC_DIR} ${DEPLOY_DIR}/customer.key spl/u-boot-spl.bin image u-boot-spl.bin
+    ${BSP_DIR}/meta-hailo-bsp/recipes-bsp/hailo-secureboot-scripts-native/files/hailo15_boot_image_sign.sh ${CC_DIR} ${DEPLOY_DIR}/customer.key u-boot.dtb ${SOC} devicetree u-boot.dtb.signed
+    ${BSP_DIR}/meta-hailo-bsp/recipes-bsp/hailo-secureboot-scripts-native/files/hailo15_boot_image_sign.sh ${CC_DIR} ${DEPLOY_DIR}/customer.key spl/u-boot-spl.bin ${SOC} image u-boot-spl.bin
     cp u-boot.dtb.signed u-boot-spl.bin ${DEPLOY_DIR}
     cp spl/u-boot-spl ${DEPLOY_DIR}/u-boot-spl.elf
     cp u-boot-tfa.itb ${DEPLOY_DIR}

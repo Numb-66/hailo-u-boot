@@ -6,3 +6,11 @@
  */
 
 #include "hailo15-base.dtsi"
+
+&hailo_boot_info {
+    scu-boot-time-measure;
+};
+
+&qspi {
+    status = "disabled";
+};

@@ -8,10 +8,7 @@
 #ifndef __HAILO15L_SBC_H
 #define __HAILO15L_SBC_H
 
-#define SPL_BOOT_SOURCE "ram"
-// #define SPL_BOOT_SOURCE "mmc2"
-// #define SPL_BOOT_SOURCE "nor"
-// Remove from defconfig 
+#define SPL_BOOT_SOURCE "mmc2"
 
 #define BOOTMENU \
     "default_spl_boot_source=" SPL_BOOT_SOURCE "\0" \
@@ -20,8 +17,8 @@
     "bootmenu_0=Autodetect=" \
         "if test ${boot_image_mode} = 1; then run boot_swupdate_mmc; exit 1; fi; " \
         "if test \"${auto_uboot_update_enable}\" = \"yes\"; then run auto_uboot_update; exit 1; fi; " \
-        "echo Trying Boot from SD; run boot_mmc0;" \
         "echo Trying Boot from eMMC; run boot_mmc1;" \
+        "echo Trying Boot from SD; run boot_mmc0;" \
         "echo Trying Boot from NFS; run bootnfs;" \
         "echo ERROR: All boot options failed\0" \
     "bootmenu_1=Boot from SD Card=run boot_mmc0\0" \

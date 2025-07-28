@@ -8,7 +8,7 @@
 #ifndef __HAILO15L_COMMON_H
 #define __HAILO15L_COMMON_H
 
-#include "hailo15_family_common.h"
+#include "hailo1x_common.h"
 
 #endif /* __HAILO15L_COMMON_H */
 
