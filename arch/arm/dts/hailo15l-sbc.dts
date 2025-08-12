@@ -11,7 +11,9 @@
 
 &hailo_boot_info {
 	ddr_config {
-		layout_swizzling_config = <0x10532647 0x10347256 0x23104765 0x56243071>;
+        sbc-rev-check = <1>;
+        layout_swizzling_config = <0x10532647 0x10347256 0x23104765 0x56243071>, // Hailo15l-SBC Rev1
+                                  <0x67431052 0x67305142 0x25104763 0x62534071>; // Hailo15l-SBC Rev2
     };
 };
 
