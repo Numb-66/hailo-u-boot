@@ -17,11 +17,11 @@
     /* Try all boot options by order */ \
     "bootmenu_0=Autodetect=" \
         "if test \"${auto_uboot_update_enable}\" = \"yes\"; then run auto_uboot_update; exit 1; fi; " \
-        "echo Trying Boot from RAM; run bootargs_base bootargs_ram && bootm 0x87000000 0x88000000:0x10000000;" \
+        "echo Trying Boot from RAM; run bootargs_base bootargs_ram && bootm ${fitimage_ram_addr} ${fs_ram_addr}:0x10000000;" \
         "echo Trying Boot from eMMC; run boot_mmc1;" \
         "echo Trying Boot from NFS; run bootnfs;" \
         "echo ERROR: All boot options failed\0" \
-    "bootmenu_1=Boot from RAM=run bootargs_base bootargs_ram && bootm 0x87000000 0x88000000:0x10000000\0" \
+    "bootmenu_1=Boot from RAM=run bootargs_base bootargs_ram && bootm ${fitimage_ram_addr} ${fs_ram_addr}:0x10000000\0" \
     "bootmenu_2=Boot from eMMC=run boot_mmc1\0" \
     "bootmenu_3=Update eMMC (wic) from TFTP=run update_wic_mmc1 && bootmenu -1\0" \
     "bootmenu_4=Update eMMC (partitions) from TFTP=run update_partitions_mmc1 && bootmenu -1\0" \

@@ -8,6 +8,10 @@
 #ifndef __HAILO15_SBC_REV3_H
 #define __HAILO15_SBC_REV3_H
 
+#ifndef SPL_BOOT_SOURCE
+#define SPL_BOOT_SOURCE "nor"
+#endif
+
 #include "hailo15_common.h"
 
 /*! @note: lpddr4 inline ecc located at the top 1/8 of the referred CS.

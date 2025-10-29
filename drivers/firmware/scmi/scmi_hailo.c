@@ -99,3 +99,23 @@ int scmi_hailo_send_boot_success_ind(struct udevice *dev) {
 
 	return 0;
 }
+
+int scmi_hailo_get_sku_id(struct udevice *dev, struct scmi_hailo_get_sku_id_p2a *sku_id) {
+	int ret;
+	struct scmi_hailo_empty_in in = {};
+	DECLARE_SCMI_HAILO_OUT(scmi_hailo_get_sku_id_p2a, out);
+	struct scmi_msg msg = SCMI_MSG_IN(SCMI_PROTOCOL_ID_HAILO,
+					  SCMI_HAILO_GET_SKU_ID, in, out);
+
+	ret = devm_scmi_process_msg(dev, &msg);
+	if (ret)
+		return ret;
+
+	if (out.status)
+		return scmi_to_linux_errno(out.status);
+
+	sku_id->soc = out.response.soc;
+	sku_id->board = out.response.board;
+
+	return 0;
+}

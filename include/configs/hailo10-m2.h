@@ -13,8 +13,7 @@
 #define BOOTMENU \
     BOOTMENU_COMMON \
     "default_spl_boot_source=ram\0" \
-    "spl_boot_source=ram\0" \
-    "bootmenu_0=Boot from RAM=run bootargs_base bootargs_ram && bootm 0x87000000 0x88000000:0x10000000\0"
+    "spl_boot_source=ram\0"
 
 #ifdef CONFIG_SPL_BUILD
 
@@ -22,8 +21,6 @@
         BOOTMENU
 
 #endif /* CONFIG_SPL_BUILD */
-
-#define BOOTARGS_BASE "loglevel=3 quiet rootwait"
 
 #include "hailo15_common.h"
 

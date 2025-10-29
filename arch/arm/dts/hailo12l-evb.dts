@@ -1,0 +1,3 @@
+#include "hailo12l-base.dtsi"
+#include "hailo15_ddr_configuration.dtsi"
+#include "hailo12l_ddr_MT53E1G32D2FW-046-C_regconfig_4GB_LP4X.dtsi"

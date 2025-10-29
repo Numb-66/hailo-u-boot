@@ -21,19 +21,11 @@
 #include <spi.h>
 #include <spi_flash.h>
 #include <net.h>
+#include <scmi_hailo_protocol.h>
+#include <linux/libfdt.h>
 
 #define MAC_ADDR_LEN 6
-
 DECLARE_GLOBAL_DATA_PTR;
-
-typedef enum {
-    BOOT_SOURCE_BOOTSTRAP = 0,
-    BOOT_SOURCE_SPI_FLASH = 1,
-    BOOT_SOURCE_UART = 2,
-    BOOT_SOURCE_PCIE = 3,
-    BOOT_SOURCE_EMMC0 = 4,
-    BOOT_SOURCE_EMMC1 = 5,
-} BOOT_SOURCE_t;
 
 static struct udevice *scmi_agent_dev = NULL;
 ulong active_boot_image_offset = 0;
@@ -268,6 +260,7 @@ int misc_init_r(void)
 {
 	int ret = 0;
 	env_set_hex("active_boot_image_offset", active_boot_image_offset);
+	env_set_ulong("active_boot_image_storage", active_boot_image_storage);
 	env_set_ulong("boot_image_mode", boot_image_mode);
 	env_set_ulong("mmc_boot_partition", hailo15_mmc_boot_partition());
 	env_set_ulong("mmc_rootfs_partition", hailo15_mmc_rootfs_partition());
@@ -285,9 +278,6 @@ int misc_init_r(void)
 	   and not in board_early_init_r(), since in board_early_init_r() we don't yet have serial */
 	return hailo15_scmi_check_version_match();
 }
-
-/* In SPL we don't use dram_init_banksize() and dram_init() */
-#ifndef CONFIG_SPL_BUILD
 
 #define CS_MAP_ADDR 282
 #define CS_MAP_OFFSET 16
@@ -396,6 +386,9 @@ int fdt_dram_cfg_get(void)
 	return 0;
 }
 
+/* In SPL we don't use dram_init() */
+#ifndef CONFIG_SPL_BUILD
+
 int dram_init(void)
 {
 	int ret;
@@ -410,6 +403,8 @@ int dram_init(void)
 
 	return 0;
 }
+
+#endif /* !CONFIG_SPL_BUILD */
 
 /*! @note Need to add back the appropriate DDR reg configs to veloce/ginger/... also */
 int dram_init_banksize(void)
@@ -426,8 +421,6 @@ int dram_init_banksize(void)
 
 	return 0;
 }
-
-#endif /* !CONFIG_SPL_BUILD */
 
 #if defined(CONFIG_SHOW_BOOT_PROGRESS)
 void show_boot_progress(int progress)
@@ -453,4 +446,66 @@ void *board_fdt_blob_setup(int *err)
 ulong env_sf_get_env_offset(void)
 {
 	return ((ulong)CONFIG_ENV_OFFSET) + active_boot_image_offset;
+}
+
+static void fixup_linux_cma_size(void *fdt, uint64_t new_size)
+{
+	const char *node_path = "/reserved-memory/linux,cma";
+	int node, reg_len, ret;
+	const void *orig_prop;
+	fdt64_t reg[2];
+
+	/* Locate the linux,cma reserved-memory node */
+	node = fdt_path_offset(fdt, node_path);
+	if (node < 0) {
+		printf("Warning: %s node not found: %s\n",
+				node_path, fdt_strerror(node));
+		return;
+	}
+
+	/* Read the existing "reg" property */
+	orig_prop = fdt_getprop(fdt, node, "reg", &reg_len);
+	if (!orig_prop || reg_len != sizeof(reg)) {
+		printf("Warning: failed to read reg for %s: %s\n",
+				node_path, fdt_strerror(reg_len));
+		return;
+	}
+	memcpy(reg, orig_prop, sizeof(reg));
+
+	/* Override the size (second cell) */
+	reg[1] = cpu_to_fdt64(new_size);
+
+	/* Write the updated "reg" back into the DT */
+	ret = fdt_setprop(fdt, node, "reg", reg, sizeof(reg));
+	if (ret) {
+		printf("Warning: failed to override reg for %s: %s\n",
+				node_path, fdt_strerror(ret));
+		return;
+	}
+}
+
+static void disable_hailo_cma(void *fdt)
+{
+	const char *node_path = "/reserved-memory/hailo_media_buf,cma";
+	int node, ret;
+
+	node = fdt_path_offset(fdt, node_path);
+	if (node < 0) {
+		printf("Warning: %s node not found: %s\n", node_path, fdt_strerror(node));
+		return;
+	}
+
+	ret = fdt_setprop_string(fdt, node, "status", "disabled");
+	if (ret) {
+		printf("Warning: failed to disable %s node: %s\n", node_path, fdt_strerror(ret));
+		return;
+	}
+}
+
+void board_fixup_fdt_reserved_mem(void *fdt)
+{
+	if (env_get_yesno("shrink_cma") == 1) {
+		fixup_linux_cma_size(fdt, 64UL * SZ_1M);
+		disable_hailo_cma(fdt);
+	}
 }

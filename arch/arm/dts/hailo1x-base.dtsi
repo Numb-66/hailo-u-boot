@@ -11,11 +11,16 @@
 #include <dt-bindings/soc/hailo15_scu_fw_version.h>
 #include <dt-bindings/soc/hailo15_scmi_api.h>
 
-/* reserve memory for secondary cores' spin-table */
+/* reserved memory for secondary cores' spin-table */
 /memreserve/ 0x800FF000 0x0001000;
-/* reserver memory for device tree and overlay */
-/memreserve/ 0x84800000 0x0200000;
+/* reserved memory for linux device tree and overlay */
+/memreserve/ 0x80800000 0x100000;
+/* reserved memory for u-boot devicetree boot */
 /memreserve/ CONFIG_HAILO15_DTB_ADDRESS CONFIG_HAILO15_DTB_MAX_SIZE;
+/* reserved memory for pre-console buffer */
+/memreserve/ CONFIG_PRE_CON_BUF_ADDR CONFIG_PRE_CON_BUF_SZ;
+/* reserved memory for logs used by linux */
+/memreserve/ 0x80200000 0xFE000;
 
 / {
     #address-cells = <2>;
@@ -25,17 +30,6 @@
 		compatible = "arm,psci-1.0";
 		method = "smc";
 	};
-
-    reserved-memory {
-        #address-cells = <2>;
-        #size-cells = <2>;
-        ranges;
-
-        // Allocate 4kB to the buffer characters before the console is available
-        pre_console_buffer_reserved: pre_console_buffer@0 {
-            reg = <0x0 0x83000000 0x0 0x1000>;
-        };
-    };
 
     hailo_boot_info: hailo_boot_info@0 {
         compatible = "hailo,boot-info";
@@ -173,11 +167,6 @@
         reg = <0 0x78000000 0 0x1000>;
         broken-cd;
         disable-wp;
-        clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_HCLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_SDIO_0_M_HCLK>,
-                 <&scmi_clk HAILO15_SCMI_CLOCK_IDX_SDIO_0_CARD_CLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_SDIO_0_CLK_DIV_BYPASS>;
-        clock-names = "core", "m_clk", "card_clk", "clk_div_bypass";
-        resets = <&scmi_reset HAILO15_SCMI_RESET_IDX_SDIO1_8BIT_MUX>;
-        reset-names = "sdio1-8bit-mux";
         u-boot,dm-spl;
     };
     sdio1: sdio1@78001000 {
@@ -190,8 +179,6 @@
         clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_HCLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_SDIO_1_M_HCLK>,
                  <&scmi_clk HAILO15_SCMI_CLOCK_IDX_SDIO_1_CARD_CLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_SDIO_1_CLK_DIV_BYPASS>;
         clock-names = "core", "m_clk", "card_clk", "clk_div_bypass";
-        resets = <&scmi_reset HAILO15_SCMI_RESET_IDX_SDIO1_8BIT_MUX>;
-        reset-names = "sdio1-8bit-mux";
         u-boot,dm-spl;
     };
 
@@ -229,9 +216,7 @@
         compatible = "hailo,hailo15-gem";
         reg = <0 0x001b5000 0 0x3000>;
         reg-names = "eth_ctrl";
-        clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_ETHERNET_PCLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_ETHERNET_ACLK>;
-        clock-names = "pclk", "hclk";
-        phy-mode = "rgmii";
+        phy-mode = "rgmii-id";
     };
     chosen {
         stdout-path = &serial;
@@ -240,5 +225,6 @@
     aliases {
         mmc0 = &sdio0;
         mmc1 = &sdio1;
+        eth0 = &macb;
     };
 };

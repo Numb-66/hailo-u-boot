@@ -1,0 +1,54 @@
+
+#define HAILO_SOC_TYPE HAILO_SOC_HAILO12L
+#include "hailo1x-base.dtsi"
+
+/ {
+    pl320_mbox: mailbox@0 {
+        reg = <0 0x78003000 0 0x1000>;
+    };
+
+    xspi: xspi@1c0000 {
+        compatible = "hailo,xspi-nor";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        reg = <0x00000000 0x001c0000 0x00000000 0x2000>,
+                <0x00000000 0x70000000 0x00000000 0x08000000>,
+                <0x0 0x0010f000 0x0 0x1000>;
+
+        clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_HCLK>;
+
+        status = "disabled";
+
+        u-boot,dm-spl;
+
+        spi0_flash0: flash@0 {
+            #address-cells = <1>;
+            #size-cells = <1>;
+            compatible = "jedec,spi-nor";
+            spi-max-frequency = <6250000>; /* 90Mhz in DTR, 166Mhz in STR */
+            reg = <0>;		/* chip select */
+
+            u-boot,dm-spl;
+        };
+    };
+
+    aliases {
+        spi0 = &xspi;
+    };
+
+    i2c_0: i2c@104000 {
+        clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_I2C_0>;
+    };
+
+    i2c_1: i2c@105000 {
+        clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_I2C_1>;
+    };
+
+    i2c_2: i2c@106000 {
+        clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_I2C_2>;
+    };
+
+    i2c_3: i2c@107000 {
+        clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_I2C_3>;
+    };
+};

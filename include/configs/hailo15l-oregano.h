@@ -20,7 +20,7 @@
         "echo Trying Boot from SD; run boot_mmc0;" \
         "echo ERROR: All boot options failed\0" \
     "bootmenu_1=Boot from SD=run boot_mmc0\0" \
-    "bootmenu_2=Boot from RAM=run bootargs_base bootargs_ram && bootm 0x87000000 0x88000000:0x1000000\0" \
+    "bootmenu_2=Boot from RAM=run bootargs_base bootargs_ram && bootm ${fitimage_ram_addr} ${fs_ram_addr}:0x1000000\0" \
     "bootmenu_3=Boot from NFS=run bootnfs\0" \
     "bootdelay=4\0"
 

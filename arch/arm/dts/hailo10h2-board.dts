@@ -1,3 +1,0 @@
-#include "hailo10h2-base.dtsi"
-#include "hailo15_ddr_configuration.dtsi"
-#include "hailo15_ddr_MT53E512M32D1-046_regconfig_2GB.dtsi" // 2GB ddr

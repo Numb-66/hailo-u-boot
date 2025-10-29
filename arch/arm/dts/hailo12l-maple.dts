@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * dts file for Hailo10H2 Mint SoC
+ * dts file for Hailo12L Maple SoC
  *
  * Copyright (c) 2019-2024 Hailo Technologies Ltd. All rights reserved.
  */
 
-#include "hailo10h2-base.dtsi"
+#include "hailo12l-base.dtsi"
 #include "hailo15_ddr_configuration.dtsi"
-#include "hailo15_ddr_MT53E512M32D1-046_regconfig_2GB.dtsi" // 2GB ddr
+#include "hailo12l_ddr_MT53E1G32D2FW-046-C_regconfig_4GB_LP4X.dtsi"
 
 &hailo_boot_info {
 	ddr_config {

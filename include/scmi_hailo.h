@@ -29,6 +29,8 @@ int scmi_hailo_get_boot_info(struct udevice *dev, struct scmi_hailo_get_boot_inf
 
 int scmi_hailo_send_boot_success_ind(struct udevice *dev);
 
+int scmi_hailo_get_sku_id(struct udevice *dev, struct scmi_hailo_get_sku_id_p2a *sku_id);
+
 #else
 int scmi_hailo_configure_ethernet_delay(
     struct udevice *dev, uint8_t tx_bypass_clock_delay, uint8_t tx_clock_inversion,
@@ -49,6 +51,11 @@ int scmi_hailo_get_boot_info(struct udevice *dev, struct scmi_hailo_get_boot_inf
 }
 
 int scmi_hailo_send_boot_success_ind(struct udevice *dev)
+{
+    return SCMI_NOT_SUPPORTED;
+}
+
+int scmi_hailo_get_sku_id(struct udevice *dev, struct scmi_hailo_get_sku_id_p2a *sku_id)
 {
     return SCMI_NOT_SUPPORTED;
 }

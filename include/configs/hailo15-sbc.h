@@ -9,24 +9,25 @@
 #define __HAILO15_SBC_H
 
 #define SWUPDATE_MMC_INDEX "1"
-
+#ifndef SPL_BOOT_SOURCE
+#define SPL_BOOT_SOURCE "nor"
+#endif
 #define BOOTMENU \
     /* Try all boot options by order */ \
     "bootmenu_0=Autodetect=" \
+        "if test ${boot_image_mode} = 1; then run boot_swupdate_mmc; exit 1; fi; " \
         "if test \"${auto_uboot_update_enable}\" = \"yes\"; then run auto_uboot_update; exit 1; fi; " \
         "echo Trying Boot from SD; run boot_mmc1;" \
         "echo Trying Boot from NFS; run bootnfs;" \
         "echo ERROR: All boot options failed\0" \
     "bootmenu_1=Boot from SD Card=run boot_mmc1\0" \
-    "bootmenu_2=Update SD (wic) from TFTP=run update_wic_mmc1 && bootmenu -1\0" \
-    "bootmenu_3=Update SD (partitions) from TFTP=run update_partitions_mmc1 && bootmenu -1\0" \
-    "bootmenu_4=Boot from NFS=run bootnfs\0" \
-    "default_spl_boot_source=mmc2\0" \
-    "spl_boot_source=mmc2\0"
+    "bootmenu_2=Boot from NFS=run bootnfs\0" \
+    "default_spl_boot_source=nor\0" \
+    "spl_boot_source=nor\0"
 
 #ifdef CONFIG_HAILO15_SWUPDATE
-#define SWUPDATE_BOOTMENU_OPTION "bootmenu_5=SWUpdate=run boot_swupdate_mmc\0" \
-                                 "bootmenu_6=SWUpdate AB board init=run boot_swupdate_ab_tftp\0"
+#define SWUPDATE_BOOTMENU_OPTION    "bootmenu_3=SD Card Board Init=run boot_swupdate_sdio1_only_a\0" \
+                                    "bootmenu_4=SD Card AB Board Init=run boot_swupdate_sdio1_ab\0" 
 #endif /* CONFIG_HAILO15_SWUPDATE */
 
 #include "hailo15_common.h"
