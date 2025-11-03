@@ -1266,7 +1266,10 @@ static int vsc8531_vsc8541_clk_skew_config(struct phy_device *phydev)
 {
 	enum vsc_phy_rgmii_skew rx_clk_skew = VSC_PHY_RGMII_DELAY_200_PS;
 	enum vsc_phy_rgmii_skew tx_clk_skew = VSC_PHY_RGMII_DELAY_200_PS;
+	struct ofnode_phandle_args phandle_args;
+	int retval;
 	u16 reg_val;
+
 
 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
@@ -1275,6 +1278,13 @@ static int vsc8531_vsc8541_clk_skew_config(struct phy_device *phydev)
 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
 		tx_clk_skew = VSC_PHY_RGMII_DELAY_2000_PS;
+
+	retval = dev_read_phandle_with_args(phydev->dev, "phy-handle", NULL, 0, 0, &phandle_args);
+	if (!retval) {
+		rx_clk_skew = ofnode_read_u32_default(phandle_args.node, "vsc8531,rx-clk-skew", rx_clk_skew);
+		tx_clk_skew = ofnode_read_u32_default(phandle_args.node, "vsc8531,tx-clk-skew", tx_clk_skew);
+	}
+	debug("set clocks skew: rx=%d, tx=%d\n", rx_clk_skew, tx_clk_skew);
 
 	phy_write(phydev, MDIO_DEVAD_NONE, MSCC_EXT_PAGE_ACCESS,
 		  MSCC_PHY_PAGE_EXT2);

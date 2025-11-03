@@ -23,6 +23,10 @@ The `ddr_config` structure includes the following properties:
     - Possible values:
         - 0: disable
         - 1: enable
+- bist_mode: Controls the BIST procedure address space. it can be partial or full address space. The BIST runs at every boot.
+    - Possible values:
+        - DDR_BIST_MODE_PARTIAL_ADDRESS_SPACE: Partial DDR address space test. checks the DDR interface.
+        - DDR_BIST_MODE_FULL_ADDRESS_SPACE: Full DDR address space test. check both DDR interface and all DDR cells.
 - f1_frequency: Controls the frequency of the DDR in F1.
 - f2_frequency: Controls the frequency of the DDR in F2.
     - Note: This value is half the transfer rate (MT/s) value because it is double data-rate.
@@ -30,15 +34,7 @@ The `ddr_config` structure includes the following properties:
         - 50000000, 100000000, 1598000000, 200000000,
         - 400000000, 800000000, 1200000000, 1600000000,
         - 2000000000, 2130000000, 2132000000, 2133000000
-- periodic_vref_training_enable: Enable (1) or disable (0) periodic VREF re-training upon temperature change.
-- periodic_calvl_training_enable: Enable (1) or disable (0) periodic CALVL re-training upon temperature change.
-- periodic_wrlvl_training_enable: Enable (1) or disable (0) periodic WRLVL re-training upon temperature change.
-- periodic_rdlvl_training_enable: Enable (1) or disable (0) periodic RDLVL re-training upon temperature change.
-- periodic_rdlvl_gate_training_enable: Enable (1) or disable (0) periodic RDGATE re-training upon temperature change.
-- periodic_wdqlvl_training_enable: Enable (1) or disable (0) periodic WDQLVL re-training upon temperature change.
 - periodic_io_calibration_disabled: Is periodic IO calibration disabled by firmware? (1) yes, (0) no.
-- temperature_poll_period_ms: Polling rate for temperature changes in milliseconds.
-- temperature_retraining_threshold_millicelsius: Retraining temperature change threshold in milli-Celsius.
 - stop_before_controller_start: Is in stop-before-controller-start mode? (1) yes, (0) no).
     - This mode is used for comparison with the configuration before controller-start in DDRAPP mode.
 - dram_auto_low_power_mode: selects Automatic DRAM low power mode.
@@ -64,15 +60,7 @@ hailo_boot_info {
                 bist_enable = <1>;
                 f1_frequency = <1000000000>;
                 f2_frequency = <2000000000>;
-                periodic_vref_training_enable = <1>;
-                periodic_calvl_training_enable = <1>;
-                periodic_wrlvl_training_enable = <1>;
-                periodic_rdlvl_training_enable = <1>;
-                periodic_rdlvl_gate_training_enable = <1>;
-                periodic_wdqlvl_training_enable = <1>;
                 periodic_io_calibration_disabled = <0>;
-                temperature_poll_period_ms = <1000>;
-                temperature_retraining_threshold_millicelsius = <100>;
                 stop_before_controller_start = <0>;
                 dram_auto_low_power_mode = <DRAM_AUTO_LOW_POWER_MODE_DYNAMIC_PCPCS_INTERFACE>;
                 ddr_phy_low_power_mode = <DDR_PHY_LOW_POWER_MODE_LIGHT_SLEEP>;

@@ -14,7 +14,7 @@
 &hailo_boot_info {
     shutdown-gpio-pin = <20>;
     ddr_config {
-		dram_auto_detect_en = <1>;
+        dram_auto_detect_en = <1>;
     };
 };
 

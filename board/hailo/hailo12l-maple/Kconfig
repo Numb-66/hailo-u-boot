@@ -1,13 +1,13 @@
-if TARGET_HAILO10H2_MAPLE
+if TARGET_HAILO12L_MAPLE
 
 config SYS_BOARD
-	default "hailo10h2-maple"
+	default "hailo12l-maple"
 
 config SYS_VENDOR
 	default "hailo"
 
 config SYS_CONFIG_NAME
-	default "hailo10h2-maple"
+	default "hailo12l-maple"
 	help
 	  This option contains information about board configuration name.
 	  Based on this option include/configs/<CONFIG_SYS_CONFIG_NAME>.h header

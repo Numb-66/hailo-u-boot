@@ -8,9 +8,10 @@
 #include "hailo15l-base.dtsi"
 #include "hailo15_ddr_configuration.dtsi"
 #include "hailo15l_ddr_MT53E512M32D1-046_regconfig_2GB_lpddr4x.dtsi"
+#include <dt-bindings/net/mscc-phy-vsc8531.h>
 
 &hailo_boot_info {
-	ddr_config {
+    ddr_config {
         sbc-rev-check = <1>;
         layout_swizzling_config = <0x10532647 0x10347256 0x23104765 0x56243071>, // Hailo15l-SBC Rev1
                                   <0x67431052 0x67305142 0x25104763 0x62534071>; // Hailo15l-SBC Rev2
@@ -51,6 +52,20 @@
 
 &macb {
     status = "okay";
+    phy-mode = "rgmii-id";
+    phy-handle = <&phy0>;    
+    mdio {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        phy0: ethernet-phy@0 {
+            compatible = "ethernet-phy-id0007.0572";
+            reg = <0>;
+            vsc8531,rx-clk-skew = <VSC8531_RGMII_CLK_DELAY_1_7_NS>;
+            vsc8531,tx-clk-skew = <VSC8531_RGMII_CLK_DELAY_1_7_NS>;
+            status = "okay";
+        };
+    };
 };
 
 &wda53 {

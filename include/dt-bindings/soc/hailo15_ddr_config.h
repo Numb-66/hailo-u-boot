@@ -5,6 +5,10 @@
 #define DDR_WORKING_MODE_DDRAPP (1)
 #define DDR_WORKING_MODE_INTEGRATION (2)
 
+#define DDR_BIST_MODE_PARTIAL_ADDRESS_SPACE (1)
+#define DDR_BIST_MODE_FULL_ADDRESS_SPACE (2)
+
+
 #define DDR_CTRL_ECC_MODE_DISABLED (0)
 #define DDR_CTRL_ECC_MODE_ENABLED (1) /* ECC enabled, detection disabled, correction disabled */
 #define DDR_CTRL_ECC_MODE_DETECTION (2) /* ECC enabled, detection enabled, correction disabled */

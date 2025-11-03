@@ -7,7 +7,7 @@
 
 &hailo_boot_info {
     ddr_config {
-		assembled_dram_pn = "MT53E2G32D4DE-046_regconfig_8GB_m2_2242";
-		layout_byte_swap = <0x2 0x3 0x1 0x0>;
+        assembled_dram_pn = "MT53E2G32D4DE-046_regconfig_8GB_m2_2242";
+        layout_byte_swap = <0x2 0x3 0x1 0x0>;
     };
 };

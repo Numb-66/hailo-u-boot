@@ -17,9 +17,9 @@ extract_machine() {
         cat "${DEPLOY_DIR}/machine_name.txt"
         return
     fi
-    local filename=$(find ${DEPLOY_DIR}/ -type l -name 'u-boot-*.dtb' -printf %P)
-    local machine_name=${filename#u-boot-}
-    echo ${machine_name%.dtb}
+    local filename=$(find ${DEPLOY_DIR}/ -type l -name 'u-boot-initial-env-*' -printf %P)
+    local machine_name=${filename#u-boot-initial-env-}
+    echo ${machine_name}
 }
 
 extract_board_defconfig() {
@@ -55,8 +55,8 @@ if [ -z "$SOC" ]; then
         SOC="hailo15l"
     elif [[ $BOARD == *hailo15* || $BOARD == *hailo10* ]]; then
         SOC="hailo15"
-    elif [[ $BOARD == *hailo10h2* ]]; then
-        SOC="hailo10h2"
+    elif [[ $BOARD == *hailo12l* ]]; then
+        SOC="hailo12l"
     else
         echo "Unknown platform!"
         exit 1
@@ -91,6 +91,7 @@ align_file() {
 
 build(){
     $MAKE
+    $MAKE u-boot-initial-env
 
     cp ${DEPLOY_DIR}/u-boot-tfa.its .
     cp ${DEPLOY_DIR}/bl31.bin .
@@ -104,6 +105,7 @@ build(){
     cp u-boot.dtb.signed u-boot-spl.bin ${DEPLOY_DIR}
     cp spl/u-boot-spl ${DEPLOY_DIR}/u-boot-spl.elf
     cp u-boot-tfa.itb ${DEPLOY_DIR}
+    cp u-boot-initial-env ${DEPLOY_DIR}
 }
 
 if [ $# -eq 0 ]

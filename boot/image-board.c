@@ -901,6 +901,10 @@ int boot_get_kbd(struct lmb *lmb, struct bd_info **kbd)
 	return 0;
 }
 
+__weak void board_fixup_fdt_reserved_mem(void *fdt)
+{
+}
+
 int image_setup_linux(bootm_headers_t *images)
 {
 	ulong of_size = images->ft_len;
@@ -908,8 +912,14 @@ int image_setup_linux(bootm_headers_t *images)
 	struct lmb *lmb = &images->lmb;
 	int ret;
 
-	if (CONFIG_IS_ENABLED(OF_LIBFDT))
+	if (CONFIG_IS_ENABLED(OF_LIBFDT)) {
+		ret = boot_relocate_fdt(lmb, of_flat_tree, &of_size);
+		if (ret)
+			return ret;
+
+		board_fixup_fdt_reserved_mem(*of_flat_tree);
 		boot_fdt_add_mem_rsv_regions(lmb, *of_flat_tree);
+	}
 
 	if (IS_ENABLED(CONFIG_SYS_BOOT_GET_CMDLINE)) {
 		ret = boot_get_cmdline(lmb, &images->cmdline_start,
@@ -918,12 +928,6 @@ int image_setup_linux(bootm_headers_t *images)
 			puts("ERROR with allocation of cmdline\n");
 			return ret;
 		}
-	}
-
-	if (CONFIG_IS_ENABLED(OF_LIBFDT)) {
-		ret = boot_relocate_fdt(lmb, of_flat_tree, &of_size);
-		if (ret)
-			return ret;
 	}
 
 	if (CONFIG_IS_ENABLED(OF_LIBFDT) && of_size) {

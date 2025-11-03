@@ -13,7 +13,7 @@
 
 /* additions for new relocation code */
 #define CONFIG_SYS_SDRAM_BASE (PHYS_SDRAM_1)
-#define CONFIG_SYS_INIT_SP_ADDR (0x83000000)
+#define CONFIG_SYS_INIT_SP_ADDR (0x80700000)
 
 /* GICv3 */
 #define GICD_BASE (0x60600000)
@@ -25,7 +25,10 @@
 #define COUNTER_FREQUENCY (25000000) // based on xtal clock - 25Mhz
 #define CONFIG_SYS_BOOTM_LEN (0x8000000)
 
-#define CONFIG_SPL_BSS_START_ADDR	0x82000000
+#define CONFIG_SPL_MAX_SIZE		(0x0002c000)
+#define CONFIG_SPL_BSS_START_ADDR	(0x8010f000)
+#define CONFIG_SPL_STACK		(0x801D4000)
+#define CONFIG_SPL_BSS_MAX_SIZE		(0x2000)
 #define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME	"u-boot-tfa.itb"
 // Dummy value
 #define CONFIG_SYS_UBOOT_BASE 0
@@ -44,33 +47,45 @@
 #endif /* SWUPDATE_MMC_INDEX */
 
 #define SWUPDATE_EXTRA_ENV_SETTINGS \
-    "swupdate_ram_addr=0xB0000000\0" \
-    "load_swupdate_image_from_mmc=" UNNEEDED_MMCINFO_HACK " fatload mmc ${device_num}:${mmc_boot_partition} ${swupdate_ram_addr} swupdate-image-${board}.ext4.gz && setenv swupdate_filesize ${filesize}\0" \
-    "write_swupdate_image_to_mmc=" UNNEEDED_MMCINFO_HACK " fatwrite mmc ${device_num}:${mmc_boot_partition} ${swupdate_ram_addr} swupdate-image-${board}.ext4.gz ${filesize}\0" \
-    "download_swupdate_image_to_ram= tftpboot ${swupdate_ram_addr} swupdate-image-${board}.ext4.gz && setenv swupdate_filesize ${filesize}\0" \
+    "load_swupdate_image_from_mmc=" UNNEEDED_MMCINFO_HACK " fatload mmc ${device_num}:${mmc_boot_partition} ${fs_ram_addr} swupdate-image-${board}.ext4.gz && setenv swupdate_filesize ${filesize}\0" \
+    "write_swupdate_image_to_mmc=" UNNEEDED_MMCINFO_HACK " fatwrite mmc ${device_num}:${mmc_boot_partition} ${fs_ram_addr} swupdate-image-${board}.ext4.gz ${filesize}\0" \
+    "download_swupdate_image_to_ram= tftpboot ${fs_ram_addr} swupdate-image-${board}.ext4.gz && setenv swupdate_filesize ${filesize}\0" \
     "swupdate_server_udp_logging_port=12345\0" \
     "setup_swupdate_update_filename=setenv swupdate_update_filename hailo-update-image-${board}.swu\0" \
     "swupdate_update_modes=init-partitions-single,init-scu-bl,copy-a\0" \
-    "bootargs_swupdate=run setup_swupdate_update_filename && setenv bootargs ${bootargs} SWUPDATE_SERVER_IP=${serverip} SWUPDATE_SERVER_UDP_LOGGING_PORT=${swupdate_server_udp_logging_port} SWUPDATE_UPDATE_FILENAME=${swupdate_update_filename} SWUPDATE_UPDATE_MODES=${swupdate_update_modes}\0" \
+    "bootargs_swupdate=run setup_swupdate_update_filename && setenv bootargs ${bootargs} SWUPDATE_SERVER_IP=${serverip} SWUPDATE_SERVER_UDP_LOGGING_PORT=${swupdate_server_udp_logging_port} SWUPDATE_UPDATE_FILENAME=${swupdate_update_filename} SWUPDATE_UPDATE_MODES=${swupdate_update_modes} ${bootargs_swupdate_device}\0" \
     "swupdate_load_mmc=run set_mmc" SWUPDATE_MMC_INDEX "_device_num && run load_fitimage_from_mmc && run load_swupdate_image_from_mmc\0" \
     "swupdate_load_tftp=run download_fitimage_to_ram && run download_swupdate_image_to_ram\0" \
-    "boot_swupdate=run bootargs_base bootargs_ram bootargs_swupdate && bootm ${far_ram_addr} ${swupdate_ram_addr}:${swupdate_filesize}\0" \
-    "boot_swupdate_mmc=run swupdate_load_mmc && run boot_swupdate\0" \
+    "boot_swupdate=run bootargs_base bootargs_ram bootargs_swupdate && setenv shrink_cma 1 && bootm ${fitimage_ram_addr} ${fs_ram_addr}:${swupdate_filesize}\0" \
+    "setup_swupdate_sdio0_filesystem_device=setenv bootargs_swupdate_device ${bootargs_swupdate_device} SWUPDATE_FILESYSTEM_DEVICE=mmcblk0\0" \
+    "setup_swupdate_sdio1_filesystem_device=setenv bootargs_swupdate_device ${bootargs_swupdate_device} SWUPDATE_FILESYSTEM_DEVICE=mmcblk1\0" \
+    "setup_swupdate_flash_firmware_device=setenv bootargs_swupdate_device ${bootargs_swupdate_device} SWUPDATE_FIRMWARE_DEVICE=mtdblock0 SWUPDATE_FW_ENV_DEVICE=mtd0\0" \
+    "setup_swupdate_mmc0_firmware_device=setenv bootargs_swupdate_device ${bootargs_swupdate_device} SWUPDATE_FIRMWARE_DEVICE=mmcblk0boot0 SWUPDATE_FW_ENV_DEVICE=mmcblk0boot0\0" \
+    "setup_swupdate_mmc1_firmware_device=setenv bootargs_swupdate_device ${bootargs_swupdate_device} SWUPDATE_FIRMWARE_DEVICE=mmcblk1boot0 SWUPDATE_FW_ENV_DEVICE=mmcblk1boot0\0" \
+    "setup_swupdate_firmware_device=if test ${active_boot_image_storage} = " __stringify(BOOT_SOURCE_SPI_FLASH) "; then run setup_swupdate_flash_firmware_device;fi;" \
+                                   "if test ${active_boot_image_storage} = " __stringify(BOOT_SOURCE_EMMC0) "; then run setup_swupdate_mmc0_firmware_device;fi;" \
+                                   "if test ${active_boot_image_storage} = " __stringify(BOOT_SOURCE_EMMC1) "; then run setup_swupdate_mmc1_firmware_device;fi;" \
+                                   "exit 0;\0" /* ensure script does not error */ \
+    "boot_swupdate_mmc=run swupdate_load_mmc && run setup_swupdate_firmware_device && run boot_swupdate\0" \
     "update_swupdate_image=run download_swupdate_image_to_ram && run write_swupdate_image_to_mmc\0" \
-    "boot_swupdate_ab_tftp=setenv swupdate_update_modes init-partitions-dual,init-scu-bl,copy-a,copy-b && run swupdate_load_tftp && run boot_swupdate\0"
+    "boot_swupdate_sdio0_only_a=run setup_swupdate_sdio0_filesystem_device && setenv swupdate_update_modes init-partitions-single,init-scu-bl,copy-a && run swupdate_load_tftp && run boot_swupdate\0" \
+    "boot_swupdate_sdio0_ab=run setup_swupdate_sdio0_filesystem_device && setenv swupdate_update_modes init-partitions-dual,init-scu-bl,copy-a,copy-b && run swupdate_load_tftp && run boot_swupdate\0" \
+    "boot_swupdate_sdio1_only_a=run setup_swupdate_sdio1_filesystem_device && setenv swupdate_update_modes init-partitions-single,init-scu-bl,copy-a && run swupdate_load_tftp && run boot_swupdate\0" \
+    "boot_swupdate_sdio1_ab=run setup_swupdate_sdio1_filesystem_device && setenv swupdate_update_modes init-partitions-dual,init-scu-bl,copy-a,copy-b && run swupdate_load_tftp && run boot_swupdate\0" 
 
 #define UPDATE_PARTITIONS_COMMAND "update_partitions=run update_uboot && run update_fitimage && run update_swupdate_image && run update_rootfs\0"
 
 #ifndef SWUPDATE_BOOTMENU_OPTION
 #ifndef CONFIG_HAILO15_EMMC_8BIT
-#define SWUPDATE_BOOTMENU_OPTION "bootmenu_8=SWUpdate=run boot_swupdate_mmc\0" \
-                                 "bootmenu_9=SWUpdate AB board init=run boot_swupdate_ab_tftp\0"
+#define SWUPDATE_BOOTMENU_OPTION "bootmenu_4=SD Card Board Init=run boot_swupdate_sdio0_only_a\0" \
+                                 "bootmenu_5=SD Card AB Board Init=run boot_swupdate_sdio0_ab\0" \
+                                 "bootmenu_6=eMMC Board Init=run boot_swupdate_sdio1_only_a\0" \
+                                 "bootmenu_7=eMMC AB Board Init=run boot_swupdate_sdio1_ab\0" 
 #else
-#define SWUPDATE_BOOTMENU_OPTION "bootmenu_5=SWUpdate=run boot_swupdate_mmc\0" \
-                                 "bootmenu_6=SWUpdate AB board init=run boot_swupdate_ab_tftp\0"
+#define SWUPDATE_BOOTMENU_OPTION "bootmenu_3=eMMC Board Init=run boot_swupdate_sdio1_only_a\0" \
+                                 "bootmenu_4=eMMC AB Board Init=run boot_swupdate_sdio1_ab\0"
 #endif /* CONFIG_HAILO15_EMMC_8BIT */
 #endif /* SWUPDATE_BOOTMENU_OPTION */
-
 #else
 
 #define SWUPDATE_EXTRA_ENV_SETTINGS ""
@@ -78,6 +93,10 @@
 #define UPDATE_PARTITIONS_COMMAND "update_partitions=run update_uboot && run update_fitimage && run update_rootfs\0"
 
 #endif /* CONFIG_HAILO15_SWUPDATE */
+
+#ifndef SPL_BOOT_SOURCE
+#define SPL_BOOT_SOURCE "mmc21"
+#endif
 
 #ifndef BOOTMENU
 #ifndef CONFIG_HAILO15_EMMC_8BIT
@@ -92,13 +111,9 @@
         "echo ERROR: All boot options failed\0" \
     "bootmenu_1=Boot from SD Card=run boot_mmc0\0" \
     "bootmenu_2=Boot from eMMC=run boot_mmc1\0" \
-    "bootmenu_3=Update SD (wic) from TFTP=run update_wic_mmc0 && bootmenu -1\0" \
-    "bootmenu_4=Update eMMC (wic) from TFTP=run update_wic_mmc1 && bootmenu -1\0" \
-    "bootmenu_5=Update SD (partitions) from TFTP=run update_partitions_mmc0 && bootmenu -1\0" \
-    "bootmenu_6=Update eMMC (partitions) from TFTP=run update_partitions_mmc1 && bootmenu -1\0" \
-    "bootmenu_7=Boot from NFS=run bootnfs\0" \
-    "default_spl_boot_source=mmc12\0" \
-    "spl_boot_source=mmc12\0"
+    "bootmenu_3=Boot from NFS=run bootnfs\0" \
+    "default_spl_boot_source=" SPL_BOOT_SOURCE "\0" \
+    "spl_boot_source=" SPL_BOOT_SOURCE "\0"
 #else
 #define BOOTMENU \
     /* Try all boot options by order */ \
@@ -109,9 +124,7 @@
         "echo Trying Boot from NFS; run bootnfs;" \
         "echo ERROR: All boot options failed\0" \
     "bootmenu_1=Boot from eMMC=run boot_mmc1\0" \
-    "bootmenu_2=Update eMMC (wic) from TFTP=run update_wic_mmc1 && bootmenu -1\0" \
-    "bootmenu_3=Update eMMC (partitions) from TFTP=run update_partitions_mmc1 && bootmenu -1\0" \
-    "bootmenu_4=Boot from NFS=run bootnfs\0" \
+    "bootmenu_2=Boot from NFS=run bootnfs\0" \
     "default_spl_boot_source=mmc2\0" \
     "spl_boot_source=mmc2\0"
 #endif
@@ -131,8 +144,9 @@
     "bootargs_ram=setenv bootargs ${bootargs} root=/dev/ram0 ramdisk_size=${ramdisk_size}\0" \
     "bootargs_mmc=setenv bootargs ${bootargs} root=/dev/mmcblk${device_num}p${mmc_rootfs_partition}\0" \
     "bootargs_nfs=setenv bootargs ${bootargs} root=/dev/nfs rootfstype=nfs ip=${ipaddr} nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
-    "ramdisk_size=0x8000000\0" \
-    "far_ram_addr=0x85000000\0" \
+    "ramdisk_size=0x80000\0" \
+    "fitimage_ram_addr=0x88000000\0" \
+    "fs_ram_addr=0x90000000\0" \
     "get_rootfs_partition_start_offset=part start mmc ${device_num} ${mmc_rootfs_partition} rootfs_partition_start_offset\0" \
     "sd_block_size=200\0" /* in hex, taken from running mmcinfo */\
     "serverip=10.0.0.2\0" \
@@ -141,21 +155,21 @@
     "core_image_name=" CONFIG_CORE_IMAGE_NAME "\0" \
     "set_mmc0_device_num= setenv device_num 0 && mmc dev ${device_num}\0" \
     "set_mmc1_device_num= setenv device_num 1 && mmc dev ${device_num}\0" \
-    "load_fitimage_from_mmc=" UNNEEDED_MMCINFO_HACK " fatload mmc ${device_num}:${mmc_boot_partition} ${far_ram_addr} fitImage\0" \
-    "write_fitimage_to_mmc=" UNNEEDED_MMCINFO_HACK " fatwrite mmc ${device_num}:${mmc_boot_partition} ${far_ram_addr} fitImage ${filesize}\0" \
-    "write_uboot_to_mmc=" UNNEEDED_MMCINFO_HACK " fatwrite mmc ${device_num}:${mmc_boot_partition} ${far_ram_addr} " CONFIG_SPL_FS_LOAD_PAYLOAD_NAME " ${filesize}\0" \
+    "load_fitimage_from_mmc=" UNNEEDED_MMCINFO_HACK " fatload mmc ${device_num}:${mmc_boot_partition} ${fitimage_ram_addr} fitImage\0" \
+    "write_fitimage_to_mmc=" UNNEEDED_MMCINFO_HACK " fatwrite mmc ${device_num}:${mmc_boot_partition} ${fitimage_ram_addr} fitImage ${filesize}\0" \
+    "write_uboot_to_mmc=" UNNEEDED_MMCINFO_HACK " fatwrite mmc ${device_num}:${mmc_boot_partition} ${fitimage_ram_addr} " CONFIG_SPL_FS_LOAD_PAYLOAD_NAME " ${filesize}\0" \
     "write_uboot_to_mmc0_mmc1=run set_mmc0_device_num && run write_uboot_to_mmc; run set_mmc1_device_num && run write_uboot_to_mmc\0" \
     /* "mmc write" writes in blocks, so we first calculate the number of blocks we read into wic_sdblock_count. */\
     /* we assume this is called after 'tftpboot' - so filesize is populated */\
-    "write_wic_to_mmc=setexpr wic_sdblock_count ${filesize} / ${sd_block_size} && setexpr wic_sdblock_count ${wic_sdblock_count} + 1; " UNNEEDED_MMCINFO_HACK " mmc write ${far_ram_addr} 0 ${wic_sdblock_count}\0" \
-    "write_rootfs_to_mmc=setexpr rootfs_sdblock_count ${filesize} / ${sd_block_size} && setexpr rootfs_sdblock_count ${rootfs_sdblock_count} + 1; " UNNEEDED_MMCINFO_HACK " run get_rootfs_partition_start_offset && mmc write ${far_ram_addr} ${rootfs_partition_start_offset} ${rootfs_sdblock_count}\0" \
+    "write_wic_to_mmc=setexpr wic_sdblock_count ${filesize} / ${sd_block_size} && setexpr wic_sdblock_count ${wic_sdblock_count} + 1; " UNNEEDED_MMCINFO_HACK " mmc write ${fs_ram_addr} 0 ${wic_sdblock_count}\0" \
+    "write_rootfs_to_mmc=setexpr rootfs_sdblock_count ${filesize} / ${sd_block_size} && setexpr rootfs_sdblock_count ${rootfs_sdblock_count} + 1; " UNNEEDED_MMCINFO_HACK " run get_rootfs_partition_start_offset && mmc write ${fs_ram_addr} ${rootfs_partition_start_offset} ${rootfs_sdblock_count}\0" \
     /* tftpboot sets filesize to the size it loaded */\
-    "download_wic_to_ram=tftpboot ${far_ram_addr} ${core_image_name}-${board}.wic\0" \
-    "download_rootfs_to_ram=tftpboot ${far_ram_addr} ${core_image_name}-${board}.ext4\0" \
-    "download_fitimage_to_ram=tftpboot ${far_ram_addr} fitImage\0" \
+    "download_wic_to_ram=tftpboot ${fs_ram_addr} ${core_image_name}-${board}.wic\0" \
+    "download_rootfs_to_ram=tftpboot ${fs_ram_addr} ${core_image_name}-${board}.ext4\0" \
+    "download_fitimage_to_ram=tftpboot ${fitimage_ram_addr} fitImage\0" \
     "dtb_overlays= \0" /* added space otherwise it gets removed */ \
-    "download_uboot_to_ram=tftpboot ${far_ram_addr} " CONFIG_SPL_FS_LOAD_PAYLOAD_NAME "\0" \
-    "boot=bootm ${far_ram_addr}#conf-${vendor}_${board}.dtb${dtb_overlays}\0" \
+    "download_uboot_to_ram=tftpboot ${fitimage_ram_addr} " CONFIG_SPL_FS_LOAD_PAYLOAD_NAME "\0" \
+    "boot=bootm ${fitimage_ram_addr}#conf-${vendor}_${board}.dtb${dtb_overlays}\0" \
     "boot_mmc=run bootargs_base bootargs_mmc && run load_fitimage_from_mmc && run boot\0" \
     "boot_mmc0=run set_mmc0_device_num && run boot_mmc\0"\
     "boot_mmc1=run set_mmc1_device_num && run boot_mmc\0"\

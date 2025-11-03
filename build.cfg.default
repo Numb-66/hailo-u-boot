@@ -18,10 +18,10 @@ CC_DIR=$(realpath ${SCRIPT_PATH}/../cryptocell-312-runtime)
 source /etc/default/tftpd-hpa
 DEPLOY_DIR=${TFTP_DIRECTORY}
 
-# by default we infer the board config to use (e.g. hailo15_sbc_defconfig, hailo15_security_camera_defconfig)
+# by default we infer the board config to use (e.g. hailo15_sbc_defconfig, hailo15_evb_security_camera_defconfig)
 # from the content of DEPLOY_DIR however setting it here is also supported. uncomment the following line:
 #BOARD="hailo15-sbc"
 
-# by deafult we infer the soc to use from the BOARD parameter. If the board name does not start with hailo15/hailo10/hailo15l/hailo10h2
+# by deafult we infer the soc to use from the BOARD parameter. If the board name does not start with hailo15/hailo10/hailo15l/hailo12l
 # need to uncomment the following line:
 #SOC="hailo15"

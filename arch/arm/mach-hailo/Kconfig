@@ -154,7 +154,7 @@ config MACH_HAILO10
 	bool
 	select MACH_HAILO1X
 
-config MACH_HAILO10H2
+config MACH_HAILO12L
 	bool
 	select MACH_HAILO1X
 
@@ -164,14 +164,17 @@ config CORE_IMAGE_NAME
 	string "Image Name"
 	default "core-image-minimal"
 
+config LMB_MAX_REGIONS
+	default 32
+
 config PRE_CON_BUF_ADDR
-	default 0x84000000
+	default 0x802FE000
 
 config SYS_LOAD_ADDR
-	default 0x83000000
+	default 0x80500000
 
 config SYS_TEXT_BASE
-	default 0x83000000
+	default 0x80500000
 
 config SYS_MALLOC_LEN
 	default 0x81f000
@@ -209,7 +212,7 @@ config SPL_SIZE_LIMIT
 	default 0x2C000
 
 config SPL_SYS_MALLOC_F_LEN
-	default 0x2000000
+	default 0xbec00
 
 config HAILO15_SPL_DRAM_SIZE
 	hex "Hailo15 SPL DRAM size"
@@ -221,7 +224,8 @@ config HAILO15_DTB_ADDRESS
 
 config HAILO15_DTB_MAX_SIZE
 	hex "Hailo15 DTB maximum size"
-	default 0xD4000
+	default 0x8000 if MACH_HAILO12L
+	default 0xF000 if !MACH_HAILO12L
 
 config SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR
 	default 0x400
@@ -287,10 +291,10 @@ config BAUDRATE
 endif
 
 config SPL_LOAD_FIT_ADDRESS
-	# 0x86000000 is the u-boot-tfa.itb address in boot from RAM/Pcie, and it is used when not in falcon mode [when not skipping u-boot proper].
-	default 0x86000000 if !SPL_OS_BOOT
-	# 0x87000000 is the fitImage address in boot from RAM/Pcie, and it is used when in falcon mode [when skipping u-boot proper].
-	default 0x87000000 if SPL_OS_BOOT
+	# u-boot-tfa.itb address in boot from RAM/Pcie, and it is used when not in falcon mode [when not skipping u-boot proper].
+	default 0x8032C000 if !SPL_OS_BOOT
+	# fitImage address in boot from RAM/Pcie, and it is used when in falcon mode [when skipping u-boot proper].
+	default 0x88000000 if SPL_OS_BOOT
 
 config TARGET_HAILO15_VP
 	bool "Hailo15 VP"
@@ -338,6 +342,10 @@ config TARGET_HAILO15_SBC_REV3
 	bool "Hailo15 SBC REV3"
 	select MACH_HAILO15
 
+config TARGET_HAILO15_SBC_REV3_1
+	bool "Hailo15 SBC REV3-1"
+	select MACH_HAILO15
+
 config TARGET_HAILO15L_OREGANO
 	bool "Hailo15L Oregano"
 	select MACH_HAILO15L
@@ -358,26 +366,26 @@ config TARGET_HAILO10_M2_DEVEL
 	bool "Hailo10 M.2 development"
 	select MACH_HAILO10
 
+config TARGET_HAILO12L_EVB
+	bool "Hailo12L EVB"
+	select MACH_HAILO12L
+
 config TARGET_GB_SBC
 	bool "Greenbase SBC"
 	select MACH_HAILO15
 
-config TARGET_HAILO10H2
-	bool "Hailo10H2"
-	select MACH_HAILO10H2
-
-config TARGET_HAILO10H2_VELOCE
-	bool "Hailo10H2 VELOCE"
-	select MACH_HAILO10H2
+config TARGET_HAILO12L_VELOCE
+	bool "Hailo12L VELOCE"
+	select MACH_HAILO12L
 	select HAILO_VELOCE
 
-config TARGET_HAILO10H2_MINT
-	bool "Hailo10H2 Mint"
-	select MACH_HAILO10H2
+config TARGET_HAILO12L_MINT
+	bool "Hailo12L Mint"
+	select MACH_HAILO12L
 
-config TARGET_HAILO10H2_MAPLE
-	bool "Hailo10H2 Maple"
-	select MACH_HAILO10H2
+config TARGET_HAILO12L_MAPLE
+	bool "Hailo12L Maple"
+	select MACH_HAILO12L
 
 source "board/hailo/hailo15-vp/Kconfig"
 source "board/hailo/hailo15-ginger-soc/Kconfig"
@@ -389,15 +397,16 @@ source "board/hailo/hailo15-evb-2-camera-vpu/Kconfig"
 source "board/hailo/hailo15-evb-security-camera/Kconfig"
 source "board/hailo/hailo15-sbc/Kconfig"
 source "board/hailo/hailo15-sbc-rev3/Kconfig"
+source "board/hailo/hailo15-sbc-rev3-1/Kconfig"
 source "board/hailo/hailo15l-oregano/Kconfig"
 source "board/hailo/hailo15l-evb/Kconfig"
 source "board/hailo/hailo15l-sbc/Kconfig"
 source "board/hailo/hailo10-m2/Kconfig"
 source "board/hailo/hailo10-m2-devel/Kconfig"
-source "board/hailo/hailo10h2-board/Kconfig"
-source "board/hailo/hailo10h2-veloce/Kconfig"
-source "board/hailo/hailo10h2-mint/Kconfig"
-source "board/hailo/hailo10h2-maple/Kconfig"
+source "board/hailo/hailo12l-evb/Kconfig"
+source "board/hailo/hailo12l-veloce/Kconfig"
+source "board/hailo/hailo12l-mint/Kconfig"
+source "board/hailo/hailo12l-maple/Kconfig"
 source "board/greenbase/gb-sbc/Kconfig"
 
 endif

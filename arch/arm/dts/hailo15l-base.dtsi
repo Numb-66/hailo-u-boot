@@ -32,7 +32,7 @@
             #size-cells = <1>;
             compatible = "jedec,spi-nor";
             spi-max-frequency = <6250000>; /* 90Mhz in DTR, 166Mhz in STR */
-            reg = <0>;		/* chip select */
+            reg = <0>;        /* chip select */
 
             u-boot,dm-spl;
         };
@@ -57,4 +57,22 @@
     i2c_3: i2c@107000 {
         clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_I2C_3>;
     };
+};
+
+&sdio0 {
+    clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_HCLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_SDIO_0_M_HCLK>,
+             <&scmi_clk HAILO15_SCMI_CLOCK_IDX_SDIO_0_CARD_CLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_SDIO_0_CLK_DIV_BYPASS>;
+    clock-names = "core", "m_clk", "card_clk", "clk_div_bypass";
+    resets = <&scmi_reset HAILO15_SCMI_RESET_IDX_SDIO1_8BIT_MUX>;
+    reset-names = "sdio1-8bit-mux";
+};
+
+&sdio1 {
+    resets = <&scmi_reset HAILO15_SCMI_RESET_IDX_SDIO1_8BIT_MUX>;
+    reset-names = "sdio1-8bit-mux";
+};
+
+&macb {
+    clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_ETHERNET_PCLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_ETHERNET_ACLK>;
+    clock-names = "pclk", "hclk";
 };

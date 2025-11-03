@@ -1,12 +1,12 @@
-if TARGET_HAILO10H2_VELOCE
+if TARGET_HAILO12L_VELOCE
 
 config SYS_BOARD
-	default "hailo10h2-veloce"
+	default "hailo12l-veloce"
 
 config SYS_VENDOR
 	default "hailo"
 
 config SYS_CONFIG_NAME
-	default "hailo10h2-veloce"
+	default "hailo12l-veloce"
 
 endif

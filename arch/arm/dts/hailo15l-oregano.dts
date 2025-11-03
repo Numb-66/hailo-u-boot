@@ -32,7 +32,7 @@
 };
 
 &hailo_boot_info {
-	ddr_config {
-		bist_enable = <0>;
-	};
+    ddr_config {
+        bist_enable = <0>;
+    };
 };
