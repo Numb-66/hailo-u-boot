@@ -95,7 +95,8 @@
 #endif /* CONFIG_HAILO15_SWUPDATE */
 
 #ifndef SPL_BOOT_SOURCE
-#define SPL_BOOT_SOURCE "mmc21"
+/* #define SPL_BOOT_SOURCE "mmc21" */
+#define SPL_BOOT_SOURCE "mmc12"
 #endif
 
 #ifndef BOOTMENU
