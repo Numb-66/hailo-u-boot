@@ -23,13 +23,13 @@
 
 #define CONFIG_SYS_MAX_FLASH_BANKS (1)
 #define COUNTER_FREQUENCY (25000000) // based on xtal clock - 25Mhz
-#define CONFIG_SYS_BOOTM_LEN (0x8000000)
+#define CONFIG_SYS_BOOTM_LEN (0x8000000)  /* 128MB for kernel decompression */
 
-#define CONFIG_SPL_MAX_SIZE		(0x0002c000)
-#define CONFIG_SPL_BSS_START_ADDR	(0x8010f000)
-#define CONFIG_SPL_STACK		(0x801D4000)
-#define CONFIG_SPL_BSS_MAX_SIZE		(0x2000)
-#define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME	"u-boot-tfa.itb"
+#define CONFIG_SPL_MAX_SIZE (0x0002c000)
+#define CONFIG_SPL_BSS_START_ADDR (0x8010f000)
+#define CONFIG_SPL_STACK (0x801D4000)
+#define CONFIG_SPL_BSS_MAX_SIZE (0x2000)
+#define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME "u-boot-tfa.itb"
 // Dummy value
 #define CONFIG_SYS_UBOOT_BASE 0
 
@@ -53,7 +53,7 @@
     "swupdate_server_udp_logging_port=12345\0" \
     "setup_swupdate_update_filename=setenv swupdate_update_filename hailo-update-image-${board}.swu\0" \
     "swupdate_update_modes=init-partitions-single,init-scu-bl,copy-a\0" \
-    "bootargs_swupdate=run setup_swupdate_update_filename && setenv bootargs ${bootargs} SWUPDATE_SERVER_IP=${serverip} SWUPDATE_SERVER_UDP_LOGGING_PORT=${swupdate_server_udp_logging_port} SWUPDATE_UPDATE_FILENAME=${swupdate_update_filename} SWUPDATE_UPDATE_MODES=${swupdate_update_modes} ${bootargs_swupdate_device}\0" \
+    "bootargs_swupdate=run setup_swupdate_update_filename && setenv bootargs ${bootargs} SWUPDATE_SERVER_IP=${serverip} SWUPDATE_IPADDR=${ipaddr} SWUPDATE_SERVER_UDP_LOGGING_PORT=${swupdate_server_udp_logging_port} SWUPDATE_UPDATE_FILENAME=${swupdate_update_filename} SWUPDATE_UPDATE_MODES=${swupdate_update_modes} ${bootargs_swupdate_device}\0" \
     "swupdate_load_mmc=run set_mmc" SWUPDATE_MMC_INDEX "_device_num && run load_fitimage_from_mmc && run load_swupdate_image_from_mmc\0" \
     "swupdate_load_tftp=run download_fitimage_to_ram && run download_swupdate_image_to_ram\0" \
     "boot_swupdate=run bootargs_base bootargs_ram bootargs_swupdate && setenv shrink_cma 1 && bootm ${fitimage_ram_addr} ${fs_ram_addr}:${swupdate_filesize}\0" \
@@ -131,6 +131,10 @@
 
 #endif
 
+#ifndef BOOT_COMMAND
+#define BOOT_COMMAND "bootm ${fitimage_ram_addr}#conf-${vendor}_${board}.dtb${dtb_overlays}"
+#endif
+
 /* extra build is only relevant in full u-boot */
 #ifndef CONFIG_SPL_BUILD
 
@@ -169,7 +173,7 @@
     "download_fitimage_to_ram=tftpboot ${fitimage_ram_addr} fitImage\0" \
     "dtb_overlays= \0" /* added space otherwise it gets removed */ \
     "download_uboot_to_ram=tftpboot ${fitimage_ram_addr} " CONFIG_SPL_FS_LOAD_PAYLOAD_NAME "\0" \
-    "boot=bootm ${fitimage_ram_addr}#conf-${vendor}_${board}.dtb${dtb_overlays}\0" \
+    "boot=" BOOT_COMMAND "\0" \
     "boot_mmc=run bootargs_base bootargs_mmc && run load_fitimage_from_mmc && run boot\0" \
     "boot_mmc0=run set_mmc0_device_num && run boot_mmc\0"\
     "boot_mmc1=run set_mmc1_device_num && run boot_mmc\0"\

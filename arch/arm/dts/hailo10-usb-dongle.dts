@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * dts file for Hailo15 SoC
+ *
+ * Copyright (c) 2019-2023 Hailo Technologies Ltd. All rights reserved.
+ */
+
+#include "hailo10-base.dtsi"
+#include "hailo15_ddr_configuration.dtsi"
+#include "hailo15_ddr_MT53E2G32D4DE-046_regconfig_8GB.dtsi"
+
+&i2c_1 {
+    status = "okay";
+};
+
+&spi0_flash0 {
+    spi-max-frequency = <25000000>;
+    spi-rx-bus-width = <4>;
+};

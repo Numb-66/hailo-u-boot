@@ -114,7 +114,7 @@ int scmi_hailo_get_sku_id(struct udevice *dev, struct scmi_hailo_get_sku_id_p2a 
 	if (out.status)
 		return scmi_to_linux_errno(out.status);
 
-	sku_id->soc = out.response.soc;
+	sku_id->product = out.response.product;
 	sku_id->board = out.response.board;
 
 	return 0;

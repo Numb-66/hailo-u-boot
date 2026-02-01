@@ -5,16 +5,25 @@
  * Copyright (c) 2019-2024 Hailo Technologies Ltd. All rights reserved.
  */
 
+/*
+* Note: This device tree applies only to the Hailo15l SBC.
+* It is not recommended to be used as a reference device tree.
+*
+* For instructions on creating a custom device tree, please refer to the Hailo OS User Guide:
+* https://hailo.ai/developer-zone/documentation/
+*/
+
 #include "hailo15l-base.dtsi"
 #include "hailo15_ddr_configuration.dtsi"
-#include "hailo15l_ddr_MT53E512M32D1-046_regconfig_2GB_lpddr4x.dtsi"
+#include "hailo15l_ddr_MT53E512M32D1-046_regconfig_2GB_LP4X.dtsi"
 #include <dt-bindings/net/mscc-phy-vsc8531.h>
 
 &hailo_boot_info {
     ddr_config {
+        dram_auto_detect_en = <1>; // Warnning: Applicable only to Hailo15l SBC and must be removed otherwise.
         sbc-rev-check = <1>;
-        layout_swizzling_config = <0x10532647 0x10347256 0x23104765 0x56243071>, // Hailo15l-SBC Rev1
-                                  <0x67431052 0x67305142 0x25104763 0x62534071>; // Hailo15l-SBC Rev2
+        layout_swizzling_config = <0x8 0x10532647 0x8 0x10347256 0x8 0x23104765 0x8 0x56243071>, // Hailo15l-SBC Rev1
+                                  <0x8 0x67431052 0x8 0x67305142 0x8 0x25104763 0x8 0x62534071>; // Hailo15l-SBC Rev2
     };
 };
 
@@ -45,15 +54,15 @@
             rst-pad-values = <0x2 0x2 0x1 0x1>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
             clk-pad-values = <0x2 0x2 0x0 0x0>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
             sdclkdl-cnfg = <0x1 0x3>; //extdly_en, cckdl_dc
-            drive-strength = <0x9 0x8>; //pad_sp, pad_sn 
-            u-boot,dm-spl;   
+            drive-strength = <0x9 0x8>; //pad_sp, pad_sn
+            u-boot,dm-spl;
     };
 };
 
 &macb {
     status = "okay";
     phy-mode = "rgmii-id";
-    phy-handle = <&phy0>;    
+    phy-handle = <&phy0>;
     mdio {
         #address-cells = <1>;
         #size-cells = <0>;

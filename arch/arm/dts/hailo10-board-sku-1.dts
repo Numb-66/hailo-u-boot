@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * dts file for Hailo10-M.2 2280 ES 4GiB 10 layers (board-sku-1).
+ * dts file for Hailo10 (board-sku-1).
  *
  * Copyright (c) 2019-2025 Hailo Technologies Ltd. All rights reserved.
  */

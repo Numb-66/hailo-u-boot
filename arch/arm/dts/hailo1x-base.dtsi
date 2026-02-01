@@ -10,6 +10,7 @@
 #include <generated/autoconf.h>
 #include <dt-bindings/soc/hailo15_scu_fw_version.h>
 #include <dt-bindings/soc/hailo15_scmi_api.h>
+#include <dt-bindings/soc/hailo1x_product.h>
 
 /* reserved memory for secondary cores' spin-table */
 /memreserve/ 0x800FF000 0x0001000;
@@ -26,10 +27,10 @@
     #address-cells = <2>;
     #size-cells = <2>;
 
-	psci {
-		compatible = "arm,psci-1.0";
-		method = "smc";
-	};
+    psci {
+        compatible = "arm,psci-1.0";
+        method = "smc";
+    };
 
     hailo_boot_info: hailo_boot_info@0 {
         compatible = "hailo,boot-info";
@@ -152,12 +153,12 @@
     };
 
     wda53: watchdog@7c2c1000 {
-		compatible = "arm,sp805", "arm,primecell";
-		reg = <0 0x7c2c1000 0 0x1000>;
-            	clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_HCLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_HCLK>;
-		clock-names = "wdog_clk", "apb_pclk";
-            	timeout-sec = <60>;
-		u-boot,dm-spl;
+        compatible = "arm,sp805", "arm,primecell";
+        reg = <0 0x7c2c1000 0 0x1000>;
+                clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_HCLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_HCLK>;
+        clock-names = "wdog_clk", "apb_pclk";
+                timeout-sec = <60>;
+        u-boot,dm-spl;
     };
 
     sdio0: sdio0@78000000 {

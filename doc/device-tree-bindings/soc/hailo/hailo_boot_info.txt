@@ -44,7 +44,7 @@ The `ddr_config` structure includes the following properties:
         - DRAM_AUTO_LOW_POWER_MODE_AUTOMATIC_INTERFACE: Automatic entry and exit for all low power states
 - ddr_phy_low_power_mode: selects DDR PHY low power mode
     - Possible values:
-        - DDR_PHY_LOW_POWER_MODE_DISBALED: DDR PHY low power mod is disabled
+        - DDR_PHY_LOW_POWER_MODE_DISABLED: DDR PHY low power mod is disabled
         - DDR_PHY_LOW_POWER_MODE_LIGHT_SLEEP
         - DDR_PHY_LOW_POWER_MODE_DEEP_SLEEP
 

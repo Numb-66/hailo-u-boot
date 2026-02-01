@@ -41,8 +41,9 @@ static int spl_nor_load_image(struct spl_image_info *spl_image,
 		 * Load Linux from its location in NOR flash to its defined
 		 * location in SDRAM
 		 */
-		header = (const struct image_header *)CONFIG_SYS_OS_BASE;
+		header = (const struct image_header *)spl_nor_get_uboot_base();
 #ifdef CONFIG_SPL_LOAD_FIT
+		printf("Loading fitImage from NOR flash mapped phyaddr %08lx\n", (ulong)header);
 		if (image_get_magic(header) == FDT_MAGIC) {
 			int ret;
 
@@ -51,7 +52,7 @@ static int spl_nor_load_image(struct spl_image_info *spl_image,
 			load.read = spl_nor_load_read;
 
 			ret = spl_load_simple_fit(spl_image, &load,
-						  CONFIG_SYS_OS_BASE,
+						  (ulong)header,
 						  (void *)header);
 
 #if defined CONFIG_SYS_SPL_ARGS_ADDR && defined CONFIG_CMD_SPL_NOR_OFS

@@ -23,8 +23,6 @@
 
 #endif /* CONFIG_SPL_BUILD */
 
-#define BOOTARGS_BASE "loglevel=3 quiet rootwait"
-
 #include "hailo12l_common.h"
 
 #endif /* __HAILO12L_BOARD_H */

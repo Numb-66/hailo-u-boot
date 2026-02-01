@@ -5,4 +5,4 @@
  * Copyright (c) 2019-2023 Hailo Technologies Ltd. All rights reserved.
  */
 
-#include "hailo12l_ddr_MT53E1G32D2FW-046-C_regconfig_4GB_LP4X_patch.dtsi"
+#include "hailo1x_ddr_MT53E1G32D2FW-046-B_regconfig_4GB_LP4X_patch.dtsi"

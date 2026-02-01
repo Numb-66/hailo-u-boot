@@ -913,6 +913,7 @@ if SPL_OS_BOOT
 config SYS_OS_BASE
 	hex "addr, where OS is found"
 	depends on SPL_NOR_SUPPORT
+	default 0x0
 	help
 	  Specify the address, where the OS image is found, which
 	  gets booted.

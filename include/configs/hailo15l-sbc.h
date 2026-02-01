@@ -9,6 +9,7 @@
 #define __HAILO15L_SBC_H
 
 #define SPL_BOOT_SOURCE "mmc2"
+#define SWUPDATE_MMC_INDEX "1"
 
 #include "hailo15l_common.h"
 
