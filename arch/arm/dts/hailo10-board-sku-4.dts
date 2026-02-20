@@ -5,4 +5,10 @@
  * Copyright (c) 2019-2025 Hailo Technologies Ltd. All rights reserved.
  */
 #include "hailo10-m2-base.dtsi"
-#include "hailo15_ddr_MT53E2G32D4DE-046_regconfig_8GB_m2_2242.dtsi"
+#include "hailo1x_ddr_MT53E2G32D4DE-046_regconfig_8GB_LP4.dtsi"
+
+&hailo_boot_info {
+    ddr_config {
+        layout_byte_swap = <0x2 0x3 0x1 0x0>;
+    };
+};
