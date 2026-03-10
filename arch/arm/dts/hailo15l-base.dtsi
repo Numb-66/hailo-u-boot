@@ -76,3 +76,7 @@
     clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_ETHERNET_PCLK>, <&scmi_clk HAILO15_SCMI_CLOCK_IDX_ETHERNET_ACLK>;
     clock-names = "pclk", "hclk";
 };
+
+&hailo_boot_info {
+    product-id = <HAILO_PRODUCT_ID__15L>;
+};

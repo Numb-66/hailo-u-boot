@@ -146,6 +146,7 @@ config MACH_HAILO15L
 	select SPL_RAM_SUPPORT
 	select SPL_RAM_DEVICE
 	select SUPPORT_RAW_INITRD
+	imply SPL_FS_FAT
 	imply SUPPORT_EMMC_BOOT
 	imply SUPPORT_EMMC_BOOT_OVERRIDE_PART_CONFIG
 	imply SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR
@@ -366,6 +367,14 @@ config TARGET_HAILO10_M2_DEVEL
 	bool "Hailo10 M.2 development"
 	select MACH_HAILO10
 
+config TARGET_HAILO10_SBC_REV3
+	bool "Hailo10 SBC REV3"
+	select MACH_HAILO10
+
+config TARGET_HAILO10_USB_DONGLE
+	bool "Hailo10 USB Dongle"
+	select MACH_HAILO10
+
 config TARGET_HAILO12L_EVB
 	bool "Hailo12L EVB"
 	select MACH_HAILO12L
@@ -402,7 +411,8 @@ source "board/hailo/hailo15l-oregano/Kconfig"
 source "board/hailo/hailo15l-evb/Kconfig"
 source "board/hailo/hailo15l-sbc/Kconfig"
 source "board/hailo/hailo10-m2/Kconfig"
-source "board/hailo/hailo10-m2-devel/Kconfig"
+source "board/hailo/hailo10-sbc-rev3/Kconfig"
+source "board/hailo/hailo10-usb-dongle/Kconfig"
 source "board/hailo/hailo12l-evb/Kconfig"
 source "board/hailo/hailo12l-veloce/Kconfig"
 source "board/hailo/hailo12l-mint/Kconfig"

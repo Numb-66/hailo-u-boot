@@ -8,7 +8,7 @@
 &hailo_boot_info {
     ddr_config {
         ddr_patches {
-            MT53E512M32D1-046_regconfig_2GB_lpddr4x {
+            MT53E512M32D1-046_regconfig_2GB_LP4X {
                 mr0 = <0xb9>;
                 mr5 = <0xff>;
                 mr6 = <0x7>;

@@ -10,7 +10,7 @@
 #include "hailo15_ddr_MT53E512M32D1-046_regconfig_2GB.dtsi" // 2GB ddr
 
 &hailo_boot_info {
-	ddr_config {
-		bist_enable = <0>;
-	};
+    ddr_config {
+        bist_enable = <0>;
+    };
 };

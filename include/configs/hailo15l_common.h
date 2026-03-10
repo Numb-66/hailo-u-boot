@@ -37,6 +37,8 @@
     "spl_boot_source=mmc2\0"
 #endif
 
+#define BOOT_COMMAND "bootm ${fitimage_ram_addr}"
+
 #include "hailo1x_common.h"
 
 #endif /* __HAILO15L_COMMON_H */

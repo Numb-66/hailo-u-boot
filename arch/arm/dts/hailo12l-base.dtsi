@@ -26,7 +26,7 @@
             #size-cells = <1>;
             compatible = "jedec,spi-nor";
             spi-max-frequency = <6250000>; /* 90Mhz in DTR, 166Mhz in STR */
-            reg = <0>;		/* chip select */
+            reg = <0>;        /* chip select */
 
             u-boot,dm-spl;
         };
@@ -51,4 +51,8 @@
     i2c_3: i2c@107000 {
         clocks = <&scmi_clk HAILO15_SCMI_CLOCK_IDX_I2C_3>;
     };
+};
+
+&hailo_boot_info {
+    product-id = <HAILO_PRODUCT_ID__12L>;
 };

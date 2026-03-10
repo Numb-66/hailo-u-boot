@@ -2263,7 +2263,7 @@ int boot_get_setup_fit(bootm_headers_t *images, uint8_t arch,
 	noffset = fit_get_node_from_config(images, FIT_SETUP_PROP, addr);
 	if (noffset < 0)
 		return noffset;
-
+	
 	ret = fit_image_load(images, addr, NULL, NULL, arch,
 			     IH_TYPE_X86_SETUP, BOOTSTAGE_ID_FIT_SETUP_START,
 			     FIT_LOAD_REQUIRED, setup_start, &len);
@@ -2305,7 +2305,6 @@ int boot_get_fdt_fit(bootm_headers_t *images, ulong addr,
 		if (next_config - 1 > fit_uname_config_copy)
 			fit_uname_config = fit_uname_config_copy;
 	}
-
 	fdt_noffset = fit_image_load(images,
 		addr, &fit_uname, &fit_uname_config,
 		arch, IH_TYPE_FLATDT,
@@ -2373,6 +2372,7 @@ int boot_get_fdt_fit(bootm_headers_t *images, ulong addr,
 		}
 
 		debug("%d: using uname=%s uconfig=%s\n", i, uname, uconfig);
+
 
 		ov_noffset = fit_image_load(images,
 			addr, &uname, &uconfig,
