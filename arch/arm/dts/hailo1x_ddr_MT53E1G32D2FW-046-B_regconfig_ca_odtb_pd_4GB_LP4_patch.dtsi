@@ -8,7 +8,8 @@
 &hailo_boot_info {
     ddr_config {
         ddr_patches {
-            MT53E1G32D2FW-046_regconfig_ca_odtb_pd_4GB {
+            MT53E1G32D2FW-046-B_regconfig_ca_odtb_pd_4GB_LP4 {
+                reg_config_version = "1.0";
                 mr0 = <0x39>;
                 mr5 = <0xff>;
                 mr6 = <0x7>;

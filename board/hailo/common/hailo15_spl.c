@@ -18,6 +18,10 @@
 #include "mmc.h"
 #endif
 
+// Global variable to indicate if uboot TFA is in mmc2 boot section, and should be loaded from there. 
+// Variable is updated according to u-boot env variable "spl_boot_source"
+int is_mmc2_boot = 0;
+
 #define BASE_SPI_FLASH_ADDRESS 0x70000000
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -113,6 +117,9 @@ void board_boot_order(u32 *spl_boot_list)
 {
     const char *s;
 
+    // Init indication that uboot TFA is in mmc boot section
+    is_mmc2_boot = 0;
+
     env_init();
     env_load();
 
@@ -144,7 +151,11 @@ void board_boot_order(u32 *spl_boot_list)
         spl_boot_list[0] = BOOT_DEVICE_RAM;
     } else if (!strcmp(s, "nor")) {
         spl_boot_list[0] = BOOT_DEVICE_NOR;
-    } else {
+    } else if (!strcmp(s, "mmc2_boot")) {
+        spl_boot_list[0] = BOOT_DEVICE_MMC2;
+        is_mmc2_boot = 1;
+    }
+     else {
         printf("spl_boot_source=%s unsupported, falling back to mmc12\n", s);
         s = "mmc12";
         spl_boot_list[0] = BOOT_DEVICE_MMC1;
@@ -152,6 +163,23 @@ void board_boot_order(u32 *spl_boot_list)
     }
 
     printf("U-Boot SPL boot source %s\n", s);
+}
+
+u32 spl_mmc_boot_mode(const u32 boot_device)
+{
+#if defined(CONFIG_SUPPORT_EMMC_BOOT)
+    if(is_mmc2_boot && (boot_device == BOOT_DEVICE_MMC2)) 
+    {
+        return MMCSD_MODE_EMMCBOOT;
+    }
+#endif
+#if defined(CONFIG_SPL_FS_FAT) || defined(CONFIG_SPL_FS_EXT4)
+	return MMCSD_MODE_FS;
+#elif defined(CONFIG_SUPPORT_EMMC_BOOT)
+	return MMCSD_MODE_EMMCBOOT;
+#else
+	return MMCSD_MODE_RAW;
+#endif
 }
 
 int spl_mmc_fs_boot_partition(void)
