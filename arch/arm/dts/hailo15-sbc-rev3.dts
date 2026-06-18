@@ -20,8 +20,8 @@
     status = "okay";
     sdhci-caps = <0 0x01000000>; // Force VOLT33 capability
     bus-width = <4>;
-    sd-vsel-gpio-pin = <17>; // GPIO for SD voltage select
-    sd-vsel-polarity-high;
+    //sd-vsel-gpio-pin = <17>; // GPIO for SD voltage select
+    //sd-vsel-polarity-high;
     phy-config {
             card-is-emmc = <0x0>;
             cmd-pad-values = <0x1 0x3 0x1 0x1>; // txslew_ctrl_n, txslew_ctrl_p, weakpull_enable, rxsel
@@ -53,6 +53,7 @@
     pinctrl-names = "default";
     pinctrl-0 = <&pinctrl_eth>;
     hailo,tx-clock-delay = <6>;
+    phy-mode = "rmii";
 };
 
 &pinctrl {
